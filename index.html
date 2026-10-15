@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio 7 — TikTok Campaign Tracker & Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600;700&family=Plus+Jakarta+Sans:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="brand-group">
+        <div class="brand-logo">
+          <span class="logo-s7">Studio 7</span>
+          <span class="logo-divider">✕</span>
+          <span class="logo-tt">
+            <svg class="tt-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743 2.895 2.895 0 0 1 2.312-4.644c.314 0 .619.05.904.144V9.42a6.333 6.333 0 0 0-.904-.065c-3.513 0-6.36 2.848-6.36 6.361 0 3.514 2.847 6.361 6.36 6.361 3.514 0 6.361-2.847 6.361-6.361V8.536a8.212 8.212 0 0 0 4.743 1.511v-3.361z"/>
+            </svg>
+            TikTok
+          </span>
+        </div>
+        <div class="brand-info">
+          <h1 class="brand-title">ระบบส่งคลิป & แดชบอร์ดติดตามสถานะ</h1>
+          <p class="brand-subtitle">โซนภาคเหนือ • RSM วีรานุวัติ | ASM สมยศ • แคมเปญเฉพาะตำแหน่ง PIA (51 คน)</p>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <nav class="nav-tabs" role="tablist">
+        <button id="tab-form-btn" class="nav-tab active" onclick="switchTab('form')">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
+          </svg>
+          <span>📱 ส่งคลิป TikTok</span>
+        </button>
+        <button id="tab-dash-btn" class="nav-tab" onclick="switchTab('dash')">
+          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="9"/>
+            <rect x="14" y="3" width="7" height="5"/>
+            <rect x="14" y="12" width="7" height="9"/>
+            <rect x="3" y="16" width="7" height="5"/>
+          </svg>
+          <span>📊 แดชบอร์ดติดตาม</span>
+          <span id="dash-badge-pending" class="badge-dot"></span>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Main Container -->
+  <main class="main-content">
+
+    <!-- ==================== TAB 1: SUBMISSION FORM ==================== -->
+    <section id="form-view" class="view-section active">
+      <div class="form-container">
+        
+        <div class="form-card">
+          <div class="form-header">
+            <div class="form-icon-wrap">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polygon points="23 7 16 12 23 17 23 7"/>
+                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+              </svg>
+            </div>
+            <h2>ส่งลิงก์คลิป TikTok (เฉพาะตำแหน่ง PIA)</h2>
+            <p>แคมเปญส่งคลิปสำหรับพนักงานตำแหน่ง <strong>PIA</strong> (51 คน ใน 13 สาขา) กรุณาเลือกรหัสหรือชื่อของท่านเพื่อส่งงาน</p>
+          </div>
+
+          <form id="tiktok-form" onsubmit="handleFormSubmit(event)">
+            
+            <!-- Step 1: Staff Identification -->
+            <div class="form-section-title">
+              <span class="step-badge">1</span> ข้อมูลพนักงาน
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="shop-select">สาขาที่สังกัด <span class="req">*</span></label>
+                <select id="shop-select" class="form-control" onchange="onShopChange()">
+                  <option value="">-- เลือกสาขา (ทั้งหมด 13 สาขา) --</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="staff-select">ชื่อพนักงาน / รหัสพนักงาน <span class="req">*</span></label>
+                <select id="staff-select" class="form-control" onchange="onStaffSelectChange()" disabled>
+                  <option value="">-- กรุณาเลือกสาขาก่อน --</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Quick Emp ID Search Helper -->
+            <div class="quick-search-box">
+              <span class="quick-icon">💡</span>
+              <span class="quick-label">หรือพิมพ์ค้นหาด้วยรหัสพนักงาน:</span>
+              <input type="text" id="quick-emp-id" class="quick-input" placeholder="เช่น 36060, 10875..." maxlength="8" oninput="onQuickSearch(this.value)">
+            </div>
+
+            <!-- Profile Info Preview Card -->
+            <div id="profile-card" class="profile-card" style="display: none;">
+              <div class="profile-avatar" id="profile-avatar">S7</div>
+              <div class="profile-details">
+                <div class="profile-name-row">
+                  <span id="profile-name" class="profile-name">ชื่อ - นามสกุล</span>
+                  <span id="profile-status-badge" class="badge">สถานะ</span>
+                </div>
+                <div class="profile-meta">
+                  <span>รหัส: <strong id="profile-empid">-</strong></span>
+                  <span>สาขา: <strong id="profile-shop">-</strong></span>
+                  <span>ตำแหน่ง: <strong id="profile-position">-</strong></span>
+                </div>
+                <div id="profile-prev-submission" class="prev-submission-notice" style="display: none;">
+                  ⚠️ ท่านเคยส่งคลิปแล้วเมื่อ <span id="profile-prev-time">-</span> สามารถกรอกเพื่ออัปเดตลิงก์ใหม่ได้
+                </div>
+              </div>
+            </div>
+
+            <!-- Step 2: TikTok Details -->
+            <div class="form-section-title" style="margin-top: 28px;">
+              <span class="step-badge">2</span> ข้อมูลคลิป TikTok
+            </div>
+
+            <div class="form-group">
+              <label for="tiktok-url">ลิงก์คลิป TikTok (TikTok URL) <span class="req">*</span></label>
+              <div class="input-with-button">
+                <input 
+                  type="url" 
+                  id="tiktok-url" 
+                  class="form-control" 
+                  placeholder="https://vt.tiktok.com/xxxxxx/ หรือ https://www.tiktok.com/@..." 
+                  required
+                  oninput="validateTiktokUrl(this.value)"
+                >
+                <button type="button" class="btn btn-outline" onclick="testTiktokLink()">ทดสอบเปิดคลิป</button>
+              </div>
+              <small class="form-hint">สามารถคัดลอกลิงก์จากปุ่ม 'แชร์' บนแอป TikTok แล้วนำมาวางได้เลย</small>
+            </div>
+
+            <div class="form-group">
+              <label for="clip-title">หัวข้อคลิป / คอนเซ็ปต์ (ไม่บังคับ)</label>
+              <input type="text" id="clip-title" class="form-control" placeholder="เช่น รีวิวฟีเจอร์กล้อง iPhone 16 Pro, โปรโมชั่น Trade-in Studio 7">
+            </div>
+
+            <div class="form-group">
+              <label for="clip-notes">หมายเหตุเพิ่มเติม (ถ้ามี)</label>
+              <textarea id="clip-notes" class="form-control" rows="2" placeholder="ระบุข้อความหรือข้อมูลเพิ่มเติมสำหรับผู้ดูแล..."></textarea>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+              <button type="submit" id="submit-btn" class="btn btn-primary btn-block">
+                <svg viewBox="0 0 24 24" fill="currentColor" class="btn-icon">
+                  <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                </svg>
+                บันทึกและส่งคลิป TikTok
+              </button>
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ==================== TAB 2: MANAGEMENT DASHBOARD ==================== -->
+    <section id="dash-view" class="view-section">
+      <div class="dash-container">
+        
+        <!-- Dashboard Top Header -->
+        <div class="dash-header-row">
+          <div>
+            <h2 class="dash-title">ภาพรวมการส่งงานประจำแคมเปญ (เฉพาะ PIA)</h2>
+            <p class="dash-subtitle">อัปเดตสถานะแบบ Real-time ของพนักงานตำแหน่ง PIA ทั้งหมด 51 คน ใน 13 สาขา</p>
+          </div>
+          <div class="dash-tools">
+            <button class="btn btn-secondary" onclick="openLineModal('all')">
+              <svg viewBox="0 0 24 24" fill="currentColor" class="btn-icon">
+                <path d="M19.365 9.863c.349.008.694.025 1.034.053A9.972 9.972 0 0 0 12 2C6.477 2 2 6.477 2 12c0 2.213.722 4.258 1.94 5.918L2.247 21.6a1 1 0 0 0 1.256 1.256l3.682-1.693A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10 0-.724-.077-1.43-.223-2.112a9.98 9.98 0 0 1-2.412-.025z"/>
+              </svg>
+              📋 คัดลอกรายชื่อตามงาน LINE
+            </button>
+            <button class="btn btn-outline" onclick="exportExcel()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+              </svg>
+              📥 ดาวน์โหลด Excel / CSV
+            </button>
+            <button class="btn btn-icon" onclick="fetchData(true)" title="รีเฟรชข้อมูล">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin-icon" id="refresh-icon">
+                <polyline points="23 4 23 10 17 10"/>
+                <polyline points="1 20 1 14 7 14"/>
+                <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- 4 KPI Cards -->
+        <div class="kpi-grid">
+          
+          <div class="kpi-card">
+            <div class="kpi-icon total">👥</div>
+            <div class="kpi-body">
+              <span class="kpi-label">เป้าหมายพนักงาน PIA</span>
+              <span id="kpi-total" class="kpi-value">51</span>
+              <span class="kpi-sub">ครอบคลุม 13 สาขา</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon success">✅</div>
+            <div class="kpi-body">
+              <span class="kpi-label">ส่งคลิปแล้ว</span>
+              <span id="kpi-submitted" class="kpi-value">0</span>
+              <span id="kpi-percent" class="kpi-badge-pct">0%</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon warning">⏳</div>
+            <div class="kpi-body">
+              <span class="kpi-label">ยังไม่ส่งคลิป</span>
+              <span id="kpi-pending" class="kpi-value">51</span>
+              <span class="kpi-sub">รอส่งมอบผลงาน</span>
+            </div>
+          </div>
+
+          <div class="kpi-card">
+            <div class="kpi-icon branch">🏢</div>
+            <div class="kpi-body">
+              <span class="kpi-label">สาขาที่ส่งครบ 100%</span>
+              <span id="kpi-complete-branches" class="kpi-value">0 / 13</span>
+              <span class="kpi-sub">PIA ส่งครบทุกคน</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Branch Performance Section -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h3>ความคืบหน้ารายสาขา (เฉพาะตำแหน่ง PIA)</h3>
+              <p>คลิกที่การ์ดสาขาเพื่อกรองตารางดูเฉพาะพนักงานสาขานั้นได้ทันที</p>
+            </div>
+            <div class="filter-chip-group">
+              <button class="chip active" onclick="clearBranchFilter(this)">ทั้งหมด (13 สาขา)</button>
+            </div>
+          </div>
+
+          <div id="branch-cards-grid" class="branch-grid">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- Detailed Staff Table Section -->
+        <div class="section-card">
+          <div class="section-card-header table-header-flex">
+            <div>
+              <h3>รายชื่อและสถานะพนักงาน PIA แบบละเอียด</h3>
+              <p>แสดงรายการทั้งหมด <span id="table-count-label">51 คน</span></p>
+            </div>
+            
+            <!-- Controls -->
+            <div class="table-controls">
+              <div class="search-input-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-svg">
+                  <circle cx="11" cy="11" r="8"/>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"/>
+                </svg>
+                <input 
+                  type="text" 
+                  id="table-search" 
+                  class="table-search" 
+                  placeholder="ค้นหาชื่อ, รหัส, สาขา, ตำแหน่ง..." 
+                  oninput="applyTableFilters()"
+                >
+              </div>
+
+              <select id="filter-status" class="filter-select" onchange="applyTableFilters()">
+                <option value="all">สถานะ: ทั้งหมด</option>
+                <option value="submitted">✅ ส่งคลิปแล้ว</option>
+                <option value="pending">⏳ ยังไม่ส่ง</option>
+              </select>
+
+              <select id="filter-branch" class="filter-select" onchange="applyTableFilters()">
+                <option value="all">สาขา: ทั้งหมด</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Table Container -->
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width: 50px;">#</th>
+                  <th>รหัส</th>
+                  <th>ชื่อ - นามสกุล</th>
+                  <th>สาขา</th>
+                  <th>ตำแหน่ง</th>
+                  <th>สถานะ</th>
+                  <th>ลิงก์ TikTok</th>
+                  <th>หัวข้อคลิป</th>
+                  <th>เวลาที่ส่ง</th>
+                  <th style="width: 70px;">จัดการ</th>
+                </tr>
+              </thead>
+              <tbody id="staff-table-body">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ==================== LINE MESSAGE MODAL ==================== -->
+  <div id="line-modal" class="modal-backdrop" style="display: none;" onclick="closeLineModal(event)">
+    <div class="modal-dialog" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="line-icon-badge">LINE</span>
+          <h3 id="line-modal-title">ข้อความสำหรับส่งตามงานใน LINE</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeLineModal()">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="modal-desc">คัดลอกข้อความด้านล่างนี้ไปวางในกลุ่ม LINE สาขา เพื่อแจ้งเตือนพนักงานที่ยังไม่ได้ส่งคลิป:</p>
+        <textarea id="line-message-text" class="line-textarea" readonly rows="12"></textarea>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeLineModal()">ปิด</button>
+        <button class="btn btn-primary" onclick="copyLineMessage()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
+          </svg>
+          คัดลอกข้อความ (Copy)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <span id="toast-icon">✅</span>
+    <span id="toast-message">บันทึกข้อมูลเรียบร้อยแล้ว</span>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "studio7-tiktok-tracker",
+  "version": "1.0.0",
+  "description": "Studio 7 TikTok Campaign Submission Form & Real-time Tracking Dashboard",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "keywords": ["studio7", "tiktok", "tracker", "dashboard"],
+  "author": "",
+  "license": "ISC"
+}

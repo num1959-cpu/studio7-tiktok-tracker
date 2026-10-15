@@ -4,10 +4,21 @@ const path = require('path');
 const url = require('url');
 
 const PORT = process.env.PORT || 3000;
-const DATA_DIR = path.join(__dirname, 'data');
-const STAFF_FILE = path.join(DATA_DIR, 'staff.json');
-const SUBMISSIONS_FILE = path.join(DATA_DIR, 'submissions.json');
-const PUBLIC_DIR = path.join(__dirname, 'public');
+
+// Resolve directories with automatic fallback for flat GitHub repo uploads
+const hasDataFolder = fs.existsSync(path.join(__dirname, 'data'));
+const DATA_DIR = hasDataFolder ? path.join(__dirname, 'data') : __dirname;
+
+const STAFF_FILE = fs.existsSync(path.join(DATA_DIR, 'staff.json'))
+  ? path.join(DATA_DIR, 'staff.json')
+  : path.join(__dirname, 'staff.json');
+
+const SUBMISSIONS_FILE = fs.existsSync(path.join(DATA_DIR, 'submissions.json'))
+  ? path.join(DATA_DIR, 'submissions.json')
+  : path.join(__dirname, 'submissions.json');
+
+const hasPublicFolder = fs.existsSync(path.join(__dirname, 'public'));
+const PUBLIC_DIR = hasPublicFolder ? path.join(__dirname, 'public') : __dirname;
 
 // Helper to read JSON safely
 function readJSON(file, fallback = {}) {
@@ -32,12 +43,12 @@ function writeJSON(file, data) {
 const TARGET_POSITION = 'PIA';
 const allStaffList = readJSON(STAFF_FILE, []);
 if (allStaffList.length === 0) {
-  console.warn('Warning: staff.json is empty or not found.');
+  console.warn(`Warning: staff.json is empty or not found at: ${STAFF_FILE}`);
 }
 
 // Filter only target position: PIA
-const staffList = allStaffList.filter(s => s.position.trim().toUpperCase() === TARGET_POSITION);
-console.log(`Loaded ${allStaffList.length} total staff. Filtered to ${staffList.length} target staff with position: ${TARGET_POSITION}`);
+const staffList = allStaffList.filter(s => (s.position || '').trim().toUpperCase() === TARGET_POSITION);
+console.log(`Loaded ${allStaffList.length} total staff from ${STAFF_FILE}. Filtered to ${staffList.length} target staff with position: ${TARGET_POSITION}`);
 
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8',
@@ -65,7 +76,7 @@ function parseBody(req) {
     let body = '';
     req.on('data', chunk => {
       body += chunk.toString();
-      if (body.length > 1e6) { // 1MB limit
+      if (body.length > 1e6) {
         req.destroy();
         reject(new Error('Payload too large'));
       }
@@ -94,8 +105,6 @@ const server = http.createServer(async (req, res) => {
     });
     return res.end();
   }
-
-  // --- API Routes ---
 
   // GET /api/staff - Return PIA staff list with submission status
   if (req.method === 'GET' && pathname === '/api/staff') {
@@ -148,7 +157,6 @@ const server = http.createServer(async (req, res) => {
       percent: b.total_staff > 0 ? Math.round((b.submitted_count / b.total_staff) * 100) : 0
     }));
 
-    // Sort by shop code
     branches.sort((a, b) => parseInt(a.shop_code) - parseInt(b.shop_code));
     return sendJSON(res, 200, { success: true, target_position: TARGET_POSITION, data: branches });
   }
@@ -166,7 +174,6 @@ const server = http.createServer(async (req, res) => {
       const inputEmpId = String(emp_id).trim();
       const staff = staffList.find(s => s.emp_id === inputEmpId);
       
-      // If not in PIA staff list, check if exists in all staff
       if (!staff) {
         const nonPia = allStaffList.find(s => s.emp_id === inputEmpId);
         if (nonPia) {
@@ -218,7 +225,7 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // DELETE /api/submission/:emp_id - Delete submission
+  // DELETE /api/submission/:emp_id
   if (req.method === 'DELETE' && pathname.startsWith('/api/submission/')) {
     const emp_id = pathname.replace('/api/submission/', '').trim();
     const submissions = readJSON(SUBMISSIONS_FILE, {});
@@ -230,11 +237,9 @@ const server = http.createServer(async (req, res) => {
     return sendJSON(res, 404, { success: false, message: 'ไม่พบข้อมูลที่ต้องการลบ' });
   }
 
-  // GET /api/export - Export CSV file for PIA staff with Thai UTF-8 BOM
+  // GET /api/export
   if (req.method === 'GET' && pathname === '/api/export') {
     const submissions = readJSON(SUBMISSIONS_FILE, {});
-    
-    // CSV Header with BOM
     let csv = '\ufeffลำดับ,รอบเดือน,รหัสพนักงาน,ชื่อ-นามสกุล,ตำแหน่ง,รหัสสาขา,ชื่อสาขา,สถานะ,ลิงก์ TikTok,หัวข้อคลิป,หมายเหตุ,วันที่ส่งข้อมูล\n';
 
     staffList.forEach((s, idx) => {
@@ -255,10 +260,14 @@ const server = http.createServer(async (req, res) => {
     return res.end(csv);
   }
 
-  // --- Static Files ---
-  let filePath = path.join(PUBLIC_DIR, pathname === '/' ? 'index.html' : pathname);
+  // Protect server files
+  if (['/server.js', '/package.json', '/Satff.xlsx'].includes(pathname)) {
+    res.writeHead(403);
+    return res.end('Forbidden');
+  }
 
-  // Prevent directory traversal
+  // Static Files
+  let filePath = path.join(PUBLIC_DIR, pathname === '/' ? 'index.html' : pathname);
   if (!filePath.startsWith(PUBLIC_DIR)) {
     res.writeHead(403);
     return res.end('Forbidden');
@@ -285,7 +294,7 @@ const server = http.createServer(async (req, res) => {
 
 server.listen(PORT, () => {
   console.log(`====================================================`);
-  console.log(`🚀 Studio 7 TikTok Tracker (Target: PIA Only - 51 Staff)`);
+  console.log(`🚀 Studio 7 TikTok Tracker (Target: PIA Only - ${staffList.length} Staff)`);
   console.log(`   👉 Running on: http://localhost:${PORT}`);
   console.log(`====================================================`);
 });

@@ -16,7 +16,7 @@
     <div class="nav-container">
       <div class="brand-group">
         <div class="brand-logo">
-          <span class="logo-s7">Studio 7</span>
+          <img src="https://www.comseven.com/wp-content/uploads/2023/03/Studio7-logo-300x130-1.jpeg" alt="Studio 7 Logo" class="logo-s7-img">
           <span class="logo-divider">✕</span>
           <span class="logo-tt">
             <svg class="tt-icon" viewBox="0 0 24 24" fill="currentColor">
@@ -59,14 +59,28 @@
     <!-- ==================== TAB 1: SUBMISSION FORM ==================== -->
     <section id="form-view" class="view-section active">
       <div class="form-container">
+
+        <!-- Weekly / Monthly Campaign Brief Banner Card -->
+        <div class="campaign-brief-card">
+          <div class="brief-top-bar">
+            <span class="brief-tag">🎯 โจทย์ประจำสัปดาห์ / เดือน</span>
+            <span id="brief-deadline" class="brief-deadline">⏰ ปิดรับ: -</span>
+          </div>
+          <h3 id="brief-active-topic" class="brief-topic-title">🔄 โปรโมชั่นเก่าแลกใหม่ (Trade-in) ที่ Studio 7</h3>
+          <p id="brief-rules" class="brief-rules-text">ทำคลิป TikTok ความยาว 30–60 วินาที แนะนำสินค้าหรือโปรโมชั่นตามหัวข้อที่กำหนด พร้อมติดแฮชแท็กบังคับให้ครบถ้วน</p>
+          <div class="brief-hashtag-box">
+            <div class="hashtag-info">
+              <span class="hashtag-label">แฮชแท็กที่ต้องใส่:</span>
+              <code id="brief-hashtags" class="hashtag-code">#Studio7 #iPhone16 #Com7</code>
+            </div>
+            <button type="button" class="btn-copy-hashtag" onclick="copyHashtags()">📋 คัดลอกแฮชแท็ก</button>
+          </div>
+        </div>
         
         <div class="form-card">
           <div class="form-header">
-            <div class="form-icon-wrap">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polygon points="23 7 16 12 23 17 23 7"/>
-                <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-              </svg>
+            <div class="form-logo-banner">
+              <img src="https://www.comseven.com/wp-content/uploads/2023/03/Studio7-logo-300x130-1.jpeg" alt="Studio 7" class="form-logo-img">
             </div>
             <h2>ส่งลิงก์คลิป TikTok (เฉพาะตำแหน่ง PIA)</h2>
             <p>แคมเปญส่งคลิปสำหรับพนักงานตำแหน่ง <strong>PIA</strong> (51 คน ใน 13 สาขา) กรุณาเลือกรหัสหรือชื่อของท่านเพื่อส่งงาน</p>
@@ -99,7 +113,7 @@
             <div class="quick-search-box">
               <span class="quick-icon">💡</span>
               <span class="quick-label">หรือพิมพ์ค้นหาด้วยรหัสพนักงาน:</span>
-              <input type="text" id="quick-emp-id" class="quick-input" placeholder="เช่น 36060, 10875..." maxlength="8" oninput="onQuickSearch(this.value)">
+              <input type="text" id="quick-emp-id" class="quick-input" placeholder="เช่น 15765, 21365..." maxlength="8" oninput="onQuickSearch(this.value)">
             </div>
 
             <!-- Profile Info Preview Card -->
@@ -116,14 +130,31 @@
                   <span>ตำแหน่ง: <strong id="profile-position">-</strong></span>
                 </div>
                 <div id="profile-prev-submission" class="prev-submission-notice" style="display: none;">
-                  ⚠️ ท่านเคยส่งคลิปแล้วเมื่อ <span id="profile-prev-time">-</span> สามารถกรอกเพื่ออัปเดตลิงก์ใหม่ได้
+                  ⚠️ ท่านเคยส่งคลิปแล้วเมื่อ <span id="profile-prev-time">-</span> สามารถกรอกเพื่ออัปเดตลิงก์หรือหัวข้อใหม่ได้
                 </div>
               </div>
             </div>
 
             <!-- Step 2: TikTok Details -->
             <div class="form-section-title" style="margin-top: 28px;">
-              <span class="step-badge">2</span> ข้อมูลคลิป TikTok
+              <span class="step-badge">2</span> ข้อมูลคลิป TikTok และหัวข้อที่ได้รับมอบหมาย
+            </div>
+
+            <div class="form-group">
+              <label for="topic-select">หัวข้อคลิปที่ได้รับมอบหมาย <span class="req">*</span></label>
+              <select id="topic-select" class="form-control" required onchange="onTopicSelectChange()">
+                <option value="📱 แนะนำฟีเจอร์เด่น iPhone 16 / iPhone 16 Pro">📱 แนะนำฟีเจอร์เด่น iPhone 16 / iPhone 16 Pro</option>
+                <option value="🔄 โปรโมชั่นเก่าแลกใหม่ (Trade-in) ที่ Studio 7">🔄 โปรโมชั่นเก่าแลกใหม่ (Trade-in) ที่ Studio 7</option>
+                <option value="🎧 รีวิวอุปกรณ์เสริม Apple Watch / AirPods">🎧 รีวิวอุปกรณ์เสริม Apple Watch / AirPods</option>
+                <option value="🛡️ บริการหลังการขาย และประกัน Studio 7 Care">🛡️ บริการหลังการขาย และประกัน Studio 7 Care</option>
+                <option value="💬 หัวข้ออิสระ / อื่นๆ">💬 หัวข้ออิสระ / อื่นๆ (ให้พิมพ์ระบุเพิ่มเติมได้)</option>
+              </select>
+            </div>
+
+            <!-- Conditional Custom Topic Input -->
+            <div id="custom-topic-group" class="form-group" style="display: none;">
+              <label for="custom-topic-input">ระบุชื่อหัวข้อคลิป / รายละเอียดหัวข้อเพิ่มเติม <span class="req">*</span></label>
+              <input type="text" id="custom-topic-input" class="form-control" placeholder="โปรดระบุหัวข้อหรือคอนเซ็ปต์คลิปของท่าน...">
             </div>
 
             <div class="form-group">
@@ -140,11 +171,6 @@
                 <button type="button" class="btn btn-outline" onclick="testTiktokLink()">ทดสอบเปิดคลิป</button>
               </div>
               <small class="form-hint">สามารถคัดลอกลิงก์จากปุ่ม 'แชร์' บนแอป TikTok แล้วนำมาวางได้เลย</small>
-            </div>
-
-            <div class="form-group">
-              <label for="clip-title">หัวข้อคลิป / คอนเซ็ปต์ (ไม่บังคับ)</label>
-              <input type="text" id="clip-title" class="form-control" placeholder="เช่น รีวิวฟีเจอร์กล้อง iPhone 16 Pro, โปรโมชั่น Trade-in Studio 7">
             </div>
 
             <div class="form-group">
@@ -181,6 +207,9 @@
             <p class="dash-subtitle">อัปเดตสถานะแบบ Real-time ของพนักงานตำแหน่ง PIA ทั้งหมด 51 คน ใน 13 สาขา</p>
           </div>
           <div class="dash-tools">
+            <button class="btn btn-settings" onclick="openCampaignModal()">
+              ⚙️ ตั้งค่าหัวข้อแคมเปญ
+            </button>
             <button class="btn btn-secondary" onclick="openLineModal('all')">
               <svg viewBox="0 0 24 24" fill="currentColor" class="btn-icon">
                 <path d="M19.365 9.863c.349.008.694.025 1.034.053A9.972 9.972 0 0 0 12 2C6.477 2 2 6.477 2 12c0 2.213.722 4.258 1.94 5.918L2.247 21.6a1 1 0 0 0 1.256 1.256l3.682-1.693A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10 0-.724-.077-1.43-.223-2.112a9.98 9.98 0 0 1-2.412-.025z"/>
@@ -244,6 +273,22 @@
 
         </div>
 
+        <!-- Topic Breakdown Section -->
+        <div class="section-card">
+          <div class="section-card-header">
+            <div>
+              <h3>📊 สรุปยอดส่งคลิปแยกตามหัวข้อ (Topic Breakdown)</h3>
+              <p>โจทย์หลักปัจจุบัน: <strong id="dash-active-topic-label" style="color: #0f172a;">-</strong> • คลิกที่หัวข้อเพื่อกรองดูรายชื่อในตารางด้านล่าง</p>
+            </div>
+            <div class="filter-chip-group">
+              <button class="chip" onclick="clearTopicFilter()">ดูทุกหัวข้อ</button>
+            </div>
+          </div>
+          <div id="topic-breakdown-grid" class="topic-grid">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
         <!-- Branch Performance Section -->
         <div class="section-card">
           <div class="section-card-header">
@@ -280,7 +325,7 @@
                   type="text" 
                   id="table-search" 
                   class="table-search" 
-                  placeholder="ค้นหาชื่อ, รหัส, สาขา, ตำแหน่ง..." 
+                  placeholder="ค้นหาชื่อ, รหัส, สาขา, หัวข้อ..." 
                   oninput="applyTableFilters()"
                 >
               </div>
@@ -289,6 +334,10 @@
                 <option value="all">สถานะ: ทั้งหมด</option>
                 <option value="submitted">✅ ส่งคลิปแล้ว</option>
                 <option value="pending">⏳ ยังไม่ส่ง</option>
+              </select>
+
+              <select id="filter-topic" class="filter-select" onchange="applyTableFilters()">
+                <option value="all">หัวข้อ: ทั้งหมด</option>
               </select>
 
               <select id="filter-branch" class="filter-select" onchange="applyTableFilters()">
@@ -309,7 +358,7 @@
                   <th>ตำแหน่ง</th>
                   <th>สถานะ</th>
                   <th>ลิงก์ TikTok</th>
-                  <th>หัวข้อคลิป</th>
+                  <th>หัวข้อคลิปที่ส่ง</th>
                   <th>เวลาที่ส่ง</th>
                   <th style="width: 70px;">จัดการ</th>
                 </tr>
@@ -338,8 +387,8 @@
         <button class="modal-close-btn" onclick="closeLineModal()">&times;</button>
       </div>
       <div class="modal-body">
-        <p class="modal-desc">คัดลอกข้อความด้านล่างนี้ไปวางในกลุ่ม LINE สาขา เพื่อแจ้งเตือนพนักงานที่ยังไม่ได้ส่งคลิป:</p>
-        <textarea id="line-message-text" class="line-textarea" readonly rows="12"></textarea>
+        <p class="modal-desc">คัดลอกข้อความด้านล่างนี้ไปวางในกลุ่ม LINE สาขา เพื่อแจ้งเตือนโจทย์และรายชื่อพนักงานที่ยังไม่ได้ส่งคลิป:</p>
+        <textarea id="line-message-text" class="line-textarea" readonly rows="13"></textarea>
       </div>
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="closeLineModal()">ปิด</button>
@@ -349,6 +398,58 @@
             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>
           </svg>
           คัดลอกข้อความ (Copy)
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== ADMIN TOPIC MANAGER MODAL ==================== -->
+  <div id="campaign-modal" class="modal-backdrop" style="display: none;" onclick="closeCampaignModal(event)">
+    <div class="modal-dialog modal-lg" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-group">
+          <span class="settings-icon-badge">⚙️ Admin</span>
+          <h3>ตั้งค่าหัวข้อแคมเปญและโจทย์ประจำรอบ</h3>
+        </div>
+        <button class="modal-close-btn" onclick="closeCampaignModal()">&times;</button>
+      </div>
+      <div class="modal-body modal-scroll-body">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="admin-active-topic">🎯 โจทย์หลักประจำสัปดาห์/เดือนนี้ (ใช้แจ้งเตือนในฟอร์ม & LINE)</label>
+            <select id="admin-active-topic" class="form-control"></select>
+          </div>
+          <div class="form-group">
+            <label for="admin-deadline">⏰ วันปิดรับส่งคลิปประจำรอบนี้</label>
+            <input type="date" id="admin-deadline" class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="admin-rules">📌 กติกา / รายละเอียดโจทย์ (แสดงในการ์ดด้านบนหน้าส่งคลิป)</label>
+          <textarea id="admin-rules" class="form-control" rows="2" placeholder="ระบุกติกา เช่น ความยาวคลิป การแต่งกาย การโชว์ป้ายโปรโมชั่น..."></textarea>
+        </div>
+
+        <div class="form-group">
+          <label for="admin-hashtags">🏷️ แฮชแท็กบังคับ (พนักงานกดคัดลอกไปวางใน TikTok ได้ทันที)</label>
+          <input type="text" id="admin-hashtags" class="form-control" placeholder="เช่น #Studio7 #iPhone16 #Com7">
+        </div>
+
+        <div class="admin-topics-section">
+          <label class="admin-topics-label">📋 รายการหัวข้อทั้งหมดใน Dropdown (เพิ่ม / แก้ไข / ลบได้ทันที)</label>
+          <div id="admin-topics-list" class="admin-topics-list">
+            <!-- Dynamically populated topic inputs -->
+          </div>
+          <div class="add-topic-row">
+            <input type="text" id="new-topic-input" class="form-control" placeholder="พิมพ์ชื่อหัวข้อใหม่ เช่น 🔥 โปรโมชั่น Back to School...">
+            <button type="button" class="btn btn-outline" onclick="addAdminTopic()">+ เพิ่มหัวข้อ</button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeCampaignModal()">ยกเลิก</button>
+        <button class="btn btn-primary" onclick="saveCampaignConfig()">
+          💾 บันทึกการตั้งค่าแคมเปญ
         </button>
       </div>
     </div>

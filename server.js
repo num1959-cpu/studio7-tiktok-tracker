@@ -17,8 +17,27 @@ const SUBMISSIONS_FILE = fs.existsSync(path.join(DATA_DIR, 'submissions.json'))
   ? path.join(DATA_DIR, 'submissions.json')
   : path.join(__dirname, 'submissions.json');
 
+const CAMPAIGN_FILE = fs.existsSync(path.join(DATA_DIR, 'campaign.json'))
+  ? path.join(DATA_DIR, 'campaign.json')
+  : path.join(DATA_DIR, 'campaign.json');
+
 const hasPublicFolder = fs.existsSync(path.join(__dirname, 'public'));
 const PUBLIC_DIR = hasPublicFolder ? path.join(__dirname, 'public') : __dirname;
+
+const DEFAULT_CAMPAIGN = {
+  active_topic: '🔄 โปรโมชั่นเก่าแลกใหม่ (Trade-in) ที่ Studio 7',
+  campaign_period: 'โจทย์ประจำสัปดาห์ / ประจำเดือน ตุลาคม 2026',
+  deadline: '2026-10-25',
+  rules: 'ทำคลิป TikTok ความยาว 30–60 วินาที แนะนำสินค้าหรือโปรโมชั่นตามหัวข้อที่กำหนด พร้อมติดแฮชแท็กบังคับให้ครบถ้วน',
+  hashtags: '#Studio7 #iPhone16 #Com7',
+  topics: [
+    '📱 แนะนำฟีเจอร์เด่น iPhone 16 / iPhone 16 Pro',
+    '🔄 โปรโมชั่นเก่าแลกใหม่ (Trade-in) ที่ Studio 7',
+    '🎧 รีวิวอุปกรณ์เสริม Apple Watch / AirPods',
+    '🛡️ บริการหลังการขาย และประกัน Studio 7 Care',
+    '💬 หัวข้ออิสระ / อื่นๆ'
+  ]
+};
 
 // Helper to read JSON safely
 function readJSON(file, fallback = {}) {
@@ -37,6 +56,18 @@ function writeJSON(file, data) {
   const tempFile = `${file}.tmp`;
   fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf8');
   fs.renameSync(tempFile, file);
+}
+
+// Helper to read campaign config
+function getCampaignConfig() {
+  const saved = readJSON(CAMPAIGN_FILE, null);
+  if (!saved || !Array.isArray(saved.topics) || saved.topics.length === 0) {
+    return { ...DEFAULT_CAMPAIGN };
+  }
+  return {
+    ...DEFAULT_CAMPAIGN,
+    ...saved
+  };
 }
 
 // Load staff data
@@ -76,7 +107,7 @@ function parseBody(req) {
     let body = '';
     req.on('data', chunk => {
       body += chunk.toString();
-      if (body.length > 1e6) {
+      if (body.length > 1e6) { // 1MB limit
         req.destroy();
         reject(new Error('Payload too large'));
       }
@@ -104,6 +135,73 @@ const server = http.createServer(async (req, res) => {
       'Access-Control-Allow-Headers': 'Content-Type'
     });
     return res.end();
+  }
+
+  // --- API Routes ---
+
+  // GET /api/campaign - Return campaign config and topic breakdown
+  if (req.method === 'GET' && pathname === '/api/campaign') {
+    const campaign = getCampaignConfig();
+    const submissions = readJSON(SUBMISSIONS_FILE, {});
+    const topicCounts = {};
+
+    campaign.topics.forEach(t => {
+      topicCounts[t] = 0;
+    });
+
+    staffList.forEach(s => {
+      const sub = submissions[s.emp_id];
+      if (sub) {
+        const topicKey = sub.topic || sub.clip_title || '💬 หัวข้ออิสระ / อื่นๆ';
+        if (topicCounts[topicKey] !== undefined) {
+          topicCounts[topicKey] += 1;
+        } else {
+          topicCounts[topicKey] = (topicCounts[topicKey] || 0) + 1;
+        }
+      }
+    });
+
+    return sendJSON(res, 200, {
+      success: true,
+      data: campaign,
+      topic_counts: topicCounts
+    });
+  }
+
+  // POST /api/campaign - Update campaign config (Admin Topic Manager)
+  if (req.method === 'POST' && pathname === '/api/campaign') {
+    try {
+      const body = await parseBody(req);
+      const current = getCampaignConfig();
+
+      const rawTopics = Array.isArray(body.topics)
+        ? body.topics.map(t => String(t).trim()).filter(Boolean)
+        : current.topics;
+
+      if (rawTopics.length === 0) {
+        return sendJSON(res, 400, { success: false, message: 'ต้องมีหัวข้อคลิปอย่างน้อย 1 หัวข้อ' });
+      }
+
+      const updated = {
+        active_topic: String(body.active_topic || rawTopics[0]).trim(),
+        campaign_period: String(body.campaign_period || current.campaign_period).trim(),
+        deadline: String(body.deadline !== undefined ? body.deadline : current.deadline).trim(),
+        rules: String(body.rules !== undefined ? body.rules : current.rules).trim(),
+        hashtags: String(body.hashtags !== undefined ? body.hashtags : current.hashtags).trim(),
+        topics: rawTopics,
+        updated_at: new Date().toISOString()
+      };
+
+      writeJSON(CAMPAIGN_FILE, updated);
+      return sendJSON(res, 200, {
+        success: true,
+        message: 'บันทึกการตั้งค่าหัวข้อแคมเปญเรียบร้อยแล้ว',
+        data: updated
+      });
+    } catch (err) {
+      console.error('Error updating campaign:', err);
+      return sendJSON(res, 500, { success: false, message: err.message });
+    }
   }
 
   // GET /api/staff - Return PIA staff list with submission status
@@ -157,6 +255,7 @@ const server = http.createServer(async (req, res) => {
       percent: b.total_staff > 0 ? Math.round((b.submitted_count / b.total_staff) * 100) : 0
     }));
 
+    // Sort by shop code
     branches.sort((a, b) => parseInt(a.shop_code) - parseInt(b.shop_code));
     return sendJSON(res, 200, { success: true, target_position: TARGET_POSITION, data: branches });
   }
@@ -165,7 +264,7 @@ const server = http.createServer(async (req, res) => {
   if (req.method === 'POST' && pathname === '/api/submit') {
     try {
       const body = await parseBody(req);
-      const { emp_id, tiktok_url, clip_title, notes } = body;
+      const { emp_id, tiktok_url, topic, custom_topic, clip_title, notes } = body;
 
       if (!emp_id) {
         return sendJSON(res, 400, { success: false, message: 'กรุณาระบุรหัสพนักงาน' });
@@ -174,6 +273,7 @@ const server = http.createServer(async (req, res) => {
       const inputEmpId = String(emp_id).trim();
       const staff = staffList.find(s => s.emp_id === inputEmpId);
       
+      // If not in PIA staff list, check if exists in all staff
       if (!staff) {
         const nonPia = allStaffList.find(s => s.emp_id === inputEmpId);
         if (nonPia) {
@@ -194,6 +294,12 @@ const server = http.createServer(async (req, res) => {
         cleanUrl = 'https://' + cleanUrl;
       }
 
+      const selectedTopic = (topic || clip_title || '').trim() || '💬 หัวข้ออิสระ / อื่นๆ';
+      const customText = (custom_topic || '').trim();
+      const displayTitle = customText
+        ? `${selectedTopic} (${customText})`
+        : selectedTopic;
+
       const submissions = readJSON(SUBMISSIONS_FILE, {});
       const now = new Date().toISOString();
       const existing = submissions[staff.emp_id];
@@ -205,7 +311,9 @@ const server = http.createServer(async (req, res) => {
         shop_name: staff.shop_name,
         position: staff.position,
         tiktok_url: cleanUrl,
-        clip_title: (clip_title || '').trim() || 'คลิป TikTok',
+        topic: selectedTopic,
+        custom_topic: customText,
+        clip_title: displayTitle,
         notes: (notes || '').trim(),
         submitted_at: existing ? existing.submitted_at : now,
         updated_at: now
@@ -225,7 +333,7 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // DELETE /api/submission/:emp_id
+  // DELETE /api/submission/:emp_id - Delete submission
   if (req.method === 'DELETE' && pathname.startsWith('/api/submission/')) {
     const emp_id = pathname.replace('/api/submission/', '').trim();
     const submissions = readJSON(SUBMISSIONS_FILE, {});
@@ -237,20 +345,23 @@ const server = http.createServer(async (req, res) => {
     return sendJSON(res, 404, { success: false, message: 'ไม่พบข้อมูลที่ต้องการลบ' });
   }
 
-  // GET /api/export
+  // GET /api/export - Export CSV file for PIA staff with Thai UTF-8 BOM
   if (req.method === 'GET' && pathname === '/api/export') {
     const submissions = readJSON(SUBMISSIONS_FILE, {});
-    let csv = '\ufeffลำดับ,รอบเดือน,รหัสพนักงาน,ชื่อ-นามสกุล,ตำแหน่ง,รหัสสาขา,ชื่อสาขา,สถานะ,ลิงก์ TikTok,หัวข้อคลิป,หมายเหตุ,วันที่ส่งข้อมูล\n';
+    
+    // CSV Header with BOM
+    let csv = '\ufeffลำดับ,รอบเดือน,รหัสพนักงาน,ชื่อ-นามสกุล,ตำแหน่ง,รหัสสาขา,ชื่อสาขา,สถานะ,ลิงก์ TikTok,หัวข้อคลิป,รายละเอียดเพิ่มเติม,หมายเหตุ,วันที่ส่งข้อมูล\n';
 
     staffList.forEach((s, idx) => {
       const sub = submissions[s.emp_id];
       const status = sub ? 'ส่งแล้ว' : 'ยังไม่ส่ง';
       const tiktokUrl = sub ? `"${sub.tiktok_url.replace(/"/g, '""')}"` : '""';
-      const clipTitle = sub ? `"${(sub.clip_title || '').replace(/"/g, '""')}"` : '""';
+      const topicVal = sub ? `"${(sub.topic || sub.clip_title || '').replace(/"/g, '""')}"` : '""';
+      const customVal = sub ? `"${(sub.custom_topic || '').replace(/"/g, '""')}"` : '""';
       const notes = sub ? `"${(sub.notes || '').replace(/"/g, '""')}"` : '""';
       const dateStr = sub ? new Date(sub.updated_at).toLocaleString('th-TH') : '';
 
-      csv += `${idx + 1},${s.month},"${s.emp_id}","${s.full_name}","${s.position}","${s.shop_code}","${s.shop_name}","${status}",${tiktokUrl},${clipTitle},${notes},"${dateStr}"\n`;
+      csv += `${idx + 1},${s.month},"${s.emp_id}","${s.full_name}","${s.position}","${s.shop_code}","${s.shop_name}","${status}",${tiktokUrl},${topicVal},${customVal},${notes},"${dateStr}"\n`;
     });
 
     res.writeHead(200, {
@@ -260,14 +371,16 @@ const server = http.createServer(async (req, res) => {
     return res.end(csv);
   }
 
-  // Protect server files
+  // --- Static Files Protection ---
   if (['/server.js', '/package.json', '/Satff.xlsx'].includes(pathname)) {
     res.writeHead(403);
     return res.end('Forbidden');
   }
 
-  // Static Files
+  // --- Static Files ---
   let filePath = path.join(PUBLIC_DIR, pathname === '/' ? 'index.html' : pathname);
+
+  // Prevent directory traversal
   if (!filePath.startsWith(PUBLIC_DIR)) {
     res.writeHead(403);
     return res.end('Forbidden');

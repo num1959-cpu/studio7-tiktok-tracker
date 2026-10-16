@@ -25,17 +25,13 @@ const hasPublicFolder = fs.existsSync(path.join(__dirname, 'public'));
 const PUBLIC_DIR = hasPublicFolder ? path.join(__dirname, 'public') : __dirname;
 
 const DEFAULT_CAMPAIGN = {
-  active_topic: '🔄 โปรโมชั่นเก่าแลกใหม่ (Trade-in) ที่ Studio 7',
+  active_topic: '🎧 รีวิวอุปกรณ์เสริม BTB(3rd)',
   campaign_period: 'โจทย์ประจำสัปดาห์ / ประจำเดือน ตุลาคม 2026',
-  deadline: '2026-10-25',
+  deadline: '2026-10-20',
   rules: 'ทำคลิป TikTok ความยาว 30–60 วินาที แนะนำสินค้าหรือโปรโมชั่นตามหัวข้อที่กำหนด พร้อมติดแฮชแท็กบังคับให้ครบถ้วน',
-  hashtags: '#Studio7 #iPhone16 #Com7',
+  hashtags: '#Studio7 #Com7',
   topics: [
-    '📱 แนะนำฟีเจอร์เด่น iPhone 16 / iPhone 16 Pro',
-    '🔄 โปรโมชั่นเก่าแลกใหม่ (Trade-in) ที่ Studio 7',
-    '🎧 รีวิวอุปกรณ์เสริม Apple Watch / AirPods',
-    '🛡️ บริการหลังการขาย และประกัน Studio 7 Care',
-    '💬 หัวข้ออิสระ / อื่นๆ'
+    '🎧 รีวิวอุปกรณ์เสริม BTB(3rd)'
   ]
 };
 
@@ -95,6 +91,9 @@ const MIME_TYPES = {
 function sendJSON(res, statusCode, data) {
   res.writeHead(statusCode, {
     'Content-Type': 'application/json; charset=utf-8',
+    'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+    'Pragma': 'no-cache',
+    'Expires': '0',
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Methods': 'GET, POST, DELETE, OPTIONS',
     'Access-Control-Allow-Headers': 'Content-Type'
@@ -399,7 +398,10 @@ const server = http.createServer(async (req, res) => {
         res.writeHead(500);
         return res.end('Internal Server Error');
       }
-      res.writeHead(200, { 'Content-Type': contentType });
+      res.writeHead(200, {
+        'Content-Type': contentType,
+        'Cache-Control': 'no-cache, must-revalidate'
+      });
       res.end(content);
     });
   });

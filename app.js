@@ -2,17 +2,13 @@
 let allStaff = [];
 let allBranches = [];
 let campaignConfig = {
-  active_topic: '🔄 โปรโมชั่นเก่าแลกใหม่ (Trade-in) ที่ Studio 7',
+  active_topic: '🎧 รีวิวอุปกรณ์เสริม BTB(3rd)',
   campaign_period: 'โจทย์ประจำสัปดาห์ / ประจำเดือน ตุลาคม 2026',
-  deadline: '2026-10-25',
+  deadline: '2026-10-20',
   rules: 'ทำคลิป TikTok ความยาว 30–60 วินาที แนะนำสินค้าหรือโปรโมชั่นตามหัวข้อที่กำหนด พร้อมติดแฮชแท็กบังคับให้ครบถ้วน',
-  hashtags: '#Studio7 #iPhone16 #Com7',
+  hashtags: '#Studio7 #Com7',
   topics: [
-    '📱 แนะนำฟีเจอร์เด่น iPhone 16 / iPhone 16 Pro',
-    '🔄 โปรโมชั่นเก่าแลกใหม่ (Trade-in) ที่ Studio 7',
-    '🎧 รีวิวอุปกรณ์เสริม Apple Watch / AirPods',
-    '🛡️ บริการหลังการขาย และประกัน Studio 7 Care',
-    '💬 หัวข้ออิสระ / อื่นๆ'
+    '🎧 รีวิวอุปกรณ์เสริม BTB(3rd)'
   ]
 };
 let topicCounts = {};
@@ -24,13 +20,21 @@ let adminEditingTopics = [];
 // DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   fetchData();
-  // Auto refresh every 20s
+  // Auto refresh every 15s on both form and dashboard
   setInterval(() => {
-    const dashView = document.getElementById('dash-view');
-    if (dashView && dashView.classList.contains('active')) {
+    const campaignModal = document.getElementById('campaign-modal');
+    const isEditingCampaign = campaignModal && campaignModal.style.display === 'flex';
+    if (!isEditingCampaign) {
       fetchData(false);
     }
-  }, 20000);
+  }, 15000);
+
+  // Also refresh immediately when user switches back to the browser/LINE tab on mobile
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible') {
+      fetchData(false);
+    }
+  });
 });
 
 // Switch Tab
@@ -45,6 +49,7 @@ function switchTab(tab) {
     dashBtn.classList.remove('active');
     formView.classList.add('active');
     dashView.classList.remove('active');
+    fetchData(false);
   } else {
     dashBtn.classList.add('active');
     formBtn.classList.remove('active');
@@ -54,16 +59,18 @@ function switchTab(tab) {
   }
 }
 
-// Fetch all data
+// Fetch all data (with cache-busting for LINE in-app browser & mobile Safari)
 async function fetchData(showIndicator = false) {
   const refreshIcon = document.getElementById('refresh-icon');
   if (showIndicator && refreshIcon) refreshIcon.classList.add('active');
 
   try {
+    const ts = Date.now();
+    const fetchOpts = { cache: 'no-store' };
     const [staffRes, branchRes, campRes] = await Promise.all([
-      fetch('/api/staff').then(r => r.json()),
-      fetch('/api/branches').then(r => r.json()),
-      fetch('/api/campaign').then(r => r.json()).catch(() => ({ success: false }))
+      fetch(`/api/staff?_t=${ts}`, fetchOpts).then(r => r.json()),
+      fetch(`/api/branches?_t=${ts}`, fetchOpts).then(r => r.json()),
+      fetch(`/api/campaign?_t=${ts}`, fetchOpts).then(r => r.json()).catch(() => ({ success: false }))
     ]);
 
     if (staffRes.success) allStaff = staffRes.data;
@@ -842,11 +849,15 @@ function renderAdminTopicsList() {
 
 function updateAdminTopicText(idx, newVal) {
   adminEditingTopics[idx] = newVal;
-  // Also update active topic dropdown options text
+  // Also update active topic dropdown options text while preserving selection
   const activeSelect = document.getElementById('admin-active-topic');
   if (activeSelect && activeSelect.options[idx]) {
+    const wasSelected = activeSelect.selectedIndex === idx;
     activeSelect.options[idx].value = newVal;
     activeSelect.options[idx].textContent = newVal;
+    if (wasSelected) {
+      activeSelect.selectedIndex = idx;
+    }
   }
 }
 
@@ -860,6 +871,9 @@ function addAdminTopic() {
   adminEditingTopics.push(val);
   input.value = '';
   renderAdminTopicsList();
+  // Select the newly added topic as active topic convenience
+  const activeSelect = document.getElementById('admin-active-topic');
+  if (activeSelect) activeSelect.value = val;
 }
 
 function removeAdminTopic(idx) {
@@ -872,13 +886,24 @@ function removeAdminTopic(idx) {
 }
 
 async function saveCampaignConfig() {
+  // If user typed something in new-topic-input but forgot to click "+ เพิ่มหัวข้อ", include it automatically
+  const pendingNewInput = document.getElementById('new-topic-input');
+  if (pendingNewInput && pendingNewInput.value.trim()) {
+    adminEditingTopics.push(pendingNewInput.value.trim());
+    pendingNewInput.value = '';
+  }
+
   const cleanedTopics = adminEditingTopics.map(t => t.trim()).filter(Boolean);
   if (cleanedTopics.length === 0) {
     showToast('⚠️ ต้องมีหัวข้ออย่างน้อย 1 หัวข้อ');
     return;
   }
 
-  const activeTopic = document.getElementById('admin-active-topic').value || cleanedTopics[0];
+  const activeSelect = document.getElementById('admin-active-topic');
+  let activeTopic = (activeSelect && activeSelect.value ? activeSelect.value.trim() : '') || cleanedTopics[0];
+  if (!cleanedTopics.includes(activeTopic)) {
+    activeTopic = cleanedTopics[0];
+  }
   const deadline = document.getElementById('admin-deadline').value;
   const rules = document.getElementById('admin-rules').value.trim();
   const hashtags = document.getElementById('admin-hashtags').value.trim();
@@ -898,6 +923,9 @@ async function saveCampaignConfig() {
 
     const result = await res.json();
     if (result.success) {
+      campaignConfig = result.data;
+      renderCampaignUI();
+      renderDashboard();
       showToast('🎉 บันทึกการตั้งค่าหัวข้อแคมเปญเรียบร้อยแล้ว');
       closeCampaignModal();
       await fetchData(true);

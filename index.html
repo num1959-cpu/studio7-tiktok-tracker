@@ -27,25 +27,16 @@
         </div>
         <div class="brand-info">
           <h1 class="brand-title">ระบบส่งคลิป & แดชบอร์ดติดตามสถานะ</h1>
-          <p class="brand-subtitle">โซนภาคเหนือ • RSM วีรานุวัติ | ASM สมยศ • แคมเปญเฉพาะตำแหน่ง PIA (51 คน)</p>
+          <p class="brand-subtitle">RSM วีรานุวัติ | ASM สมยศ • เฉพาะ PIA (51 คน)</p>
         </div>
       </div>
 
       <!-- Navigation Tabs -->
       <nav class="nav-tabs" role="tablist">
         <button id="tab-form-btn" class="nav-tab active" onclick="switchTab('form')">
-          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M12 20h9M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/>
-          </svg>
           <span>📱 ส่งคลิป TikTok</span>
         </button>
         <button id="tab-dash-btn" class="nav-tab" onclick="switchTab('dash')">
-          <svg class="tab-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="9"/>
-            <rect x="14" y="3" width="7" height="5"/>
-            <rect x="14" y="12" width="7" height="9"/>
-            <rect x="3" y="16" width="7" height="5"/>
-          </svg>
           <span>📊 แดชบอร์ดติดตาม</span>
           <span id="dash-badge-pending" class="badge-dot"></span>
         </button>
@@ -70,20 +61,17 @@
           <p id="brief-rules" class="brief-rules-text">ทำคลิป TikTok ความยาว 30–60 วินาที แนะนำสินค้าหรือโปรโมชั่นตามหัวข้อที่กำหนด พร้อมติดแฮชแท็กบังคับให้ครบถ้วน</p>
           <div class="brief-hashtag-box">
             <div class="hashtag-info">
-              <span class="hashtag-label">แฮชแท็กที่ต้องใส่:</span>
+              <span class="hashtag-label">แฮชแท็ก:</span>
               <code id="brief-hashtags" class="hashtag-code">#Studio7 #iPhone16 #Com7</code>
             </div>
-            <button type="button" class="btn-copy-hashtag" onclick="copyHashtags()">📋 คัดลอกแฮชแท็ก</button>
+            <button type="button" class="btn-copy-hashtag" onclick="copyHashtags()">📋 คัดลอก</button>
           </div>
         </div>
         
         <div class="form-card">
           <div class="form-header">
-            <div class="form-logo-banner">
-              <img src="https://www.comseven.com/wp-content/uploads/2023/03/Studio7-logo-300x130-1.jpeg" alt="Studio 7" class="form-logo-img">
-            </div>
             <h2>ส่งลิงก์คลิป TikTok (เฉพาะตำแหน่ง PIA)</h2>
-            <p>แคมเปญส่งคลิปสำหรับพนักงานตำแหน่ง <strong>PIA</strong> (51 คน ใน 13 สาขา) กรุณาเลือกรหัสหรือชื่อของท่านเพื่อส่งงาน</p>
+            <p>สำหรับพนักงานตำแหน่ง <strong>PIA</strong> (51 คน ใน 13 สาขา)</p>
           </div>
 
           <form id="tiktok-form" onsubmit="handleFormSubmit(event)">
@@ -203,26 +191,20 @@
         <!-- Dashboard Top Header -->
         <div class="dash-header-row">
           <div>
-            <h2 class="dash-title">ภาพรวมการส่งงานประจำแคมเปญ (เฉพาะ PIA)</h2>
-            <p class="dash-subtitle">อัปเดตสถานะแบบ Real-time ของพนักงานตำแหน่ง PIA ทั้งหมด 51 คน ใน 13 สาขา</p>
+            <h2 class="dash-title">ภาพรวมการส่งงาน (เฉพาะ PIA 51 คน)</h2>
+            <p class="dash-subtitle">อัปเดตสถานะ Real-time ทั้ง 13 สาขา</p>
           </div>
           <div class="dash-tools">
             <button class="btn btn-settings" onclick="openCampaignModal()">
-              ⚙️ ตั้งค่าหัวข้อแคมเปญ
+              ⚙️ ตั้งค่าหัวข้อ
             </button>
             <button class="btn btn-secondary" onclick="openLineModal('all')">
-              <svg viewBox="0 0 24 24" fill="currentColor" class="btn-icon">
-                <path d="M19.365 9.863c.349.008.694.025 1.034.053A9.972 9.972 0 0 0 12 2C6.477 2 2 6.477 2 12c0 2.213.722 4.258 1.94 5.918L2.247 21.6a1 1 0 0 0 1.256 1.256l3.682-1.693A9.957 9.957 0 0 0 12 22c5.523 0 10-4.477 10-10 0-.724-.077-1.43-.223-2.112a9.98 9.98 0 0 1-2.412-.025z"/>
-              </svg>
-              📋 คัดลอกรายชื่อตามงาน LINE
+              📋 คัดลอกตามงาน LINE
             </button>
             <button class="btn btn-outline" onclick="exportExcel()">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="btn-icon">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
-              </svg>
-              📥 ดาวน์โหลด Excel / CSV
+              📥 Excel / CSV
             </button>
-            <button class="btn btn-icon" onclick="fetchData(true)" title="รีเฟรชข้อมูล">
+            <button class="btn btn-refresh" onclick="fetchData(true)" title="รีเฟรชข้อมูล">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin-icon" id="refresh-icon">
                 <polyline points="23 4 23 10 17 10"/>
                 <polyline points="1 20 1 14 7 14"/>

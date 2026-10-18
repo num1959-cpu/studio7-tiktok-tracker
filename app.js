@@ -59,7 +59,25 @@ function switchTab(tab) {
   }
 }
 
-// Fetch all data (with cache-busting for LINE in-app browser & mobile Safari)
+// LocalStorage Backup Keys (protects against ephemeral disk resets on free cloud hosting)
+const LS_SUBS_KEY = 's7_tiktok_submissions_backup_v1';
+const LS_CAMP_KEY = 's7_tiktok_campaign_backup_v1';
+
+function getLocalSubmissionsBackup() {
+  try {
+    return JSON.parse(localStorage.getItem(LS_SUBS_KEY) || '{}');
+  } catch (e) {
+    return {};
+  }
+}
+
+function saveLocalSubmissionsBackup(subsMap) {
+  try {
+    localStorage.setItem(LS_SUBS_KEY, JSON.stringify(subsMap || {}));
+  } catch (e) {}
+}
+
+// Fetch all data (with cache-busting & automatic localStorage backup/restore)
 async function fetchData(showIndicator = false) {
   const refreshIcon = document.getElementById('refresh-icon');
   if (showIndicator && refreshIcon) refreshIcon.classList.add('active');
@@ -67,11 +85,54 @@ async function fetchData(showIndicator = false) {
   try {
     const ts = Date.now();
     const fetchOpts = { cache: 'no-store' };
-    const [staffRes, branchRes, campRes] = await Promise.all([
+    let [staffRes, branchRes, campRes] = await Promise.all([
       fetch(`/api/staff?_t=${ts}`, fetchOpts).then(r => r.json()),
       fetch(`/api/branches?_t=${ts}`, fetchOpts).then(r => r.json()),
       fetch(`/api/campaign?_t=${ts}`, fetchOpts).then(r => r.json()).catch(() => ({ success: false }))
     ]);
+
+    // Check if local browser backup has any newer submissions that need restoring after a server restart
+    if (staffRes.success) {
+      const serverRaw = staffRes.raw_submissions || {};
+      if (!staffRes.raw_submissions) {
+        staffRes.data.forEach(s => {
+          if (s.submission) serverRaw[s.emp_id] = s.submission;
+        });
+      }
+
+      const localSubs = getLocalSubmissionsBackup();
+      let needsRestore = false;
+      const mergedSubs = { ...serverRaw };
+
+      for (const [empId, localRec] of Object.entries(localSubs)) {
+        if (!localRec || !localRec.emp_id) continue;
+        const srvRec = serverRaw[empId];
+        if (!srvRec || new Date(localRec.updated_at || 0) > new Date(srvRec.updated_at || 0)) {
+          mergedSubs[empId] = localRec;
+          needsRestore = true;
+        }
+      }
+
+      saveLocalSubmissionsBackup(mergedSubs);
+
+      if (needsRestore) {
+        try {
+          await fetch('/api/sync', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ submissions: mergedSubs })
+          });
+          const ts2 = Date.now();
+          [staffRes, branchRes, campRes] = await Promise.all([
+            fetch(`/api/staff?_t=${ts2}`, fetchOpts).then(r => r.json()),
+            fetch(`/api/branches?_t=${ts2}`, fetchOpts).then(r => r.json()),
+            fetch(`/api/campaign?_t=${ts2}`, fetchOpts).then(r => r.json()).catch(() => ({ success: false }))
+          ]);
+        } catch (syncErr) {
+          console.warn('Auto-sync skipped:', syncErr);
+        }
+      }
+    }
 
     if (staffRes.success) allStaff = staffRes.data;
     if (branchRes.success) allBranches = branchRes.data;
@@ -398,6 +459,11 @@ async function handleFormSubmit(e) {
 
     const result = await res.json();
     if (result.success) {
+      if (result.data && result.data.emp_id) {
+        const localSubs = getLocalSubmissionsBackup();
+        localSubs[result.data.emp_id] = result.data;
+        saveLocalSubmissionsBackup(localSubs);
+      }
       showToast('🎉 ' + result.message);
       // Refresh data
       await fetchData();
@@ -692,6 +758,9 @@ async function deleteSubmission(empId, name) {
     const res = await fetch(`/api/submission/${empId}`, { method: 'DELETE' });
     const result = await res.json();
     if (result.success) {
+      const localSubs = getLocalSubmissionsBackup();
+      localSubs[empId] = { emp_id: empId, deleted: true, updated_at: new Date().toISOString() };
+      saveLocalSubmissionsBackup(localSubs);
       showToast('🗑️ ลบข้อมูลเรียบร้อยแล้ว');
       fetchData();
     } else {

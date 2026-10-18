@@ -1,4 +1,5 @@
 const http = require('http');
+const https = require('https');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
@@ -35,6 +36,108 @@ const DEFAULT_CAMPAIGN = {
   ]
 };
 
+// Built-in seed submissions so Render redeployments never wipe existing submissions
+const SEED_SUBMISSIONS = {
+  "28335": {
+    "emp_id": "28335",
+    "emp_name": "อัญนิกา ใสดี",
+    "shop_code": "586",
+    "shop_name": "ID586 : Studio 7-Lotus-Phetchabun",
+    "position": "PIA",
+    "tiktok_url": "https://www.tt.site/t/ZSgNmJgut/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-16T10:01:29.008Z",
+    "updated_at": "2026-10-16T10:01:29.008Z"
+  },
+  "34918": {
+    "emp_id": "34918",
+    "emp_name": "ลลิชา สังข์ชัย",
+    "shop_code": "586",
+    "shop_name": "ID586 : Studio 7-Lotus-Phetchabun",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgNmayeA/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-16T10:04:10.614Z",
+    "updated_at": "2026-10-16T10:04:10.614Z"
+  },
+  "17591": {
+    "emp_id": "17591",
+    "emp_name": "กมลวรรณ ปูนขุนทด",
+    "shop_code": "420",
+    "shop_name": "ID420 : Studio 7-MarkFour-Phrae",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSg6wFdWa/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-18T10:27:15.622Z",
+    "updated_at": "2026-10-18T10:27:30.124Z"
+  },
+  "25141": {
+    "emp_id": "25141",
+    "emp_name": "อรอนงค์ หัสเดช",
+    "shop_code": "1812",
+    "shop_name": "ID1812 : Studio 7-Big C-Mueang-Nan",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSg6oUEoj/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-18T10:58:33.788Z",
+    "updated_at": "2026-10-18T10:58:33.788Z"
+  },
+  "35194": {
+    "emp_id": "35194",
+    "emp_name": "ธัญชนก สะตะยะวงษ์",
+    "shop_code": "1812",
+    "shop_name": "ID1812 : Studio 7-Big C-Mueang-Nan",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgM1ejgG/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-18T11:02:04.200Z",
+    "updated_at": "2026-10-18T11:02:04.200Z"
+  },
+  "36198": {
+    "emp_id": "36198",
+    "emp_name": "ฉันทพิชญา เทพสิทธิ์",
+    "shop_code": "1812",
+    "shop_name": "ID1812 : Studio 7-Big C-Mueang-Nan",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgM1AaA9/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-18T11:05:30.861Z",
+    "updated_at": "2026-10-18T11:05:30.861Z"
+  },
+  "26667": {
+    "emp_id": "26667",
+    "emp_name": "พิวรรญญา บัตริยะ",
+    "shop_code": "1812",
+    "shop_name": "ID1812 : Studio 7-Big C-Mueang-Nan",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgM1XgNe/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-18T11:06:07.610Z",
+    "updated_at": "2026-10-18T11:06:07.610Z"
+  }
+};
+
 // Helper to read JSON safely
 function readJSON(file, fallback = {}) {
   try {
@@ -52,6 +155,32 @@ function writeJSON(file, data) {
   const tempFile = `${file}.tmp`;
   fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf8');
   fs.renameSync(tempFile, file);
+}
+
+// Helper to read all submissions (including seed data and tombstones)
+function getRawSubmissions() {
+  const disk = readJSON(SUBMISSIONS_FILE, {});
+  const merged = { ...SEED_SUBMISSIONS };
+  for (const [empId, record] of Object.entries(disk)) {
+    if (!record) continue;
+    const existing = merged[empId];
+    if (!existing || new Date(record.updated_at || 0) >= new Date(existing.updated_at || 0)) {
+      merged[empId] = record;
+    }
+  }
+  return merged;
+}
+
+// Helper to read only active (non-deleted) submissions
+function getActiveSubmissions() {
+  const raw = getRawSubmissions();
+  const active = {};
+  for (const [empId, record] of Object.entries(raw)) {
+    if (record && !record.deleted && record.tiktok_url) {
+      active[empId] = record;
+    }
+  }
+  return active;
 }
 
 // Helper to read campaign config
@@ -138,10 +267,56 @@ const server = http.createServer(async (req, res) => {
 
   // --- API Routes ---
 
+  // GET /api/ping - Keep-alive health check
+  if (req.method === 'GET' && pathname === '/api/ping') {
+    return sendJSON(res, 200, { ok: true, time: new Date().toISOString() });
+  }
+
+  // POST /api/sync - Distributed browser backup sync (restores submissions if container restarted)
+  if (req.method === 'POST' && pathname === '/api/sync') {
+    try {
+      const body = await parseBody(req);
+      const clientSubs = body.submissions && typeof body.submissions === 'object' ? body.submissions : {};
+      const currentRaw = getRawSubmissions();
+      let changed = false;
+
+      for (const [empId, rec] of Object.entries(clientSubs)) {
+        if (!rec || !rec.emp_id) continue;
+        const staff = staffList.find(s => s.emp_id === String(empId).trim());
+        if (!staff) continue;
+        const existing = currentRaw[empId];
+        if (!existing || new Date(rec.updated_at || 0) > new Date(existing.updated_at || 0)) {
+          currentRaw[empId] = rec;
+          changed = true;
+        }
+      }
+
+      if (changed) {
+        writeJSON(SUBMISSIONS_FILE, currentRaw);
+      }
+
+      // Also sync campaign if client has a newer updated_at
+      if (body.campaign && body.campaign.updated_at) {
+        const currentCamp = getCampaignConfig();
+        if (!currentCamp.updated_at || new Date(body.campaign.updated_at) > new Date(currentCamp.updated_at)) {
+          writeJSON(CAMPAIGN_FILE, body.campaign);
+        }
+      }
+
+      return sendJSON(res, 200, {
+        success: true,
+        restored: changed,
+        raw_submissions: currentRaw
+      });
+    } catch (err) {
+      return sendJSON(res, 500, { success: false, message: err.message });
+    }
+  }
+
   // GET /api/campaign - Return campaign config and topic breakdown
   if (req.method === 'GET' && pathname === '/api/campaign') {
     const campaign = getCampaignConfig();
-    const submissions = readJSON(SUBMISSIONS_FILE, {});
+    const submissions = getActiveSubmissions();
     const topicCounts = {};
 
     campaign.topics.forEach(t => {
@@ -205,7 +380,8 @@ const server = http.createServer(async (req, res) => {
 
   // GET /api/staff - Return PIA staff list with submission status
   if (req.method === 'GET' && pathname === '/api/staff') {
-    const submissions = readJSON(SUBMISSIONS_FILE, {});
+    const submissions = getActiveSubmissions();
+    const rawSubmissions = getRawSubmissions();
     const result = staffList.map(staff => {
       const sub = submissions[staff.emp_id] || null;
       return {
@@ -218,13 +394,14 @@ const server = http.createServer(async (req, res) => {
       success: true,
       target_position: TARGET_POSITION,
       count: result.length,
-      data: result
+      data: result,
+      raw_submissions: rawSubmissions
     });
   }
 
   // GET /api/branches - Return branch summary for PIA staff
   if (req.method === 'GET' && pathname === '/api/branches') {
-    const submissions = readJSON(SUBMISSIONS_FILE, {});
+    const submissions = getActiveSubmissions();
     const branchesMap = {};
 
     staffList.forEach(staff => {
@@ -299,9 +476,11 @@ const server = http.createServer(async (req, res) => {
         ? `${selectedTopic} (${customText})`
         : selectedTopic;
 
-      const submissions = readJSON(SUBMISSIONS_FILE, {});
+      const submissions = getRawSubmissions();
       const now = new Date().toISOString();
-      const existing = submissions[staff.emp_id];
+      const existing = submissions[staff.emp_id] && !submissions[staff.emp_id].deleted
+        ? submissions[staff.emp_id]
+        : null;
 
       const submissionRecord = {
         emp_id: staff.emp_id,
@@ -332,12 +511,16 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // DELETE /api/submission/:emp_id - Delete submission
+  // DELETE /api/submission/:emp_id - Delete submission (with tombstone so seed/sync won't resurrect)
   if (req.method === 'DELETE' && pathname.startsWith('/api/submission/')) {
     const emp_id = pathname.replace('/api/submission/', '').trim();
-    const submissions = readJSON(SUBMISSIONS_FILE, {});
-    if (submissions[emp_id]) {
-      delete submissions[emp_id];
+    const submissions = getRawSubmissions();
+    if (submissions[emp_id] && !submissions[emp_id].deleted) {
+      submissions[emp_id] = {
+        emp_id,
+        deleted: true,
+        updated_at: new Date().toISOString()
+      };
       writeJSON(SUBMISSIONS_FILE, submissions);
       return sendJSON(res, 200, { success: true, message: 'ลบข้อมูลเรียบร้อยแล้ว' });
     }
@@ -346,7 +529,7 @@ const server = http.createServer(async (req, res) => {
 
   // GET /api/export - Export CSV file for PIA staff with Thai UTF-8 BOM
   if (req.method === 'GET' && pathname === '/api/export') {
-    const submissions = readJSON(SUBMISSIONS_FILE, {});
+    const submissions = getActiveSubmissions();
     
     // CSV Header with BOM
     let csv = '\ufeffลำดับ,รอบเดือน,รหัสพนักงาน,ชื่อ-นามสกุล,ตำแหน่ง,รหัสสาขา,ชื่อสาขา,สถานะ,ลิงก์ TikTok,หัวข้อคลิป,รายละเอียดเพิ่มเติม,หมายเหตุ,วันที่ส่งข้อมูล\n';
@@ -412,4 +595,21 @@ server.listen(PORT, () => {
   console.log(`🚀 Studio 7 TikTok Tracker (Target: PIA Only - ${staffList.length} Staff)`);
   console.log(`   👉 Running on: http://localhost:${PORT}`);
   console.log(`====================================================`);
+
+  // Ensure initial merged submissions are persisted to disk
+  try {
+    writeJSON(SUBMISSIONS_FILE, getRawSubmissions());
+  } catch (e) {
+    console.warn('Could not write initial submissions file:', e.message);
+  }
+
+  // Keep-Alive Self-Ping on Render every 10 minutes so Free Tier doesn't sleep after 15 mins
+  const externalUrl = process.env.RENDER_EXTERNAL_URL || 'https://studio7-tiktok-tracker.onrender.com';
+  setInterval(() => {
+    try {
+      https.get(`${externalUrl}/api/ping`, (res) => {
+        res.resume();
+      }).on('error', () => {});
+    } catch (e) {}
+  }, 10 * 60 * 1000);
 });

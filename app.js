@@ -19,6 +19,9 @@ let currentTopicFilter = 'Cover Plus';
 let hasInitializedTopicFilter = false;
 let adminEditingTopics = [];
 
+const FIRST_ROUND_TOPIC = '🎧 รีวิวอุปกรณ์เสริม BTB(3rd)';
+const FIRST_ROUND_CUTOFF = new Date('2026-10-21T12:00:00Z').getTime();
+
 // Helper: get a staff member's submission for a specific topic (or latest submission when topicFilter === 'all')
 function getStaffTopicSubmission(staff, topicFilter = 'all') {
   if (!staff || !staff.is_submitted || !staff.submission) return null;
@@ -33,6 +36,18 @@ function getStaffTopicSubmission(staff, topicFilter = 'all') {
   const staffTopic = sub.topic || sub.clip_title || '';
   if (staffTopic === topicFilter && sub.tiktok_url) {
     return sub;
+  }
+  // Fallback for Round 1 (BTB 3rd) submissions that were overwritten before multi-topic storage was enabled
+  if (topicFilter === FIRST_ROUND_TOPIC && sub.tiktok_url) {
+    const firstSubmittedTime = new Date(sub.submitted_at || 0).getTime();
+    if (firstSubmittedTime > 0 && firstSubmittedTime <= FIRST_ROUND_CUTOFF) {
+      return {
+        ...sub,
+        topic: FIRST_ROUND_TOPIC,
+        clip_title: FIRST_ROUND_TOPIC,
+        updated_at: sub.submitted_at
+      };
+    }
   }
   return null;
 }
@@ -655,26 +670,10 @@ function renderTopicBreakdown() {
     }
   }
 
-  // Compute live counts per topic from allStaff (supports multi-topic by_topic)
+  // Compute live counts per topic using getStaffTopicSubmission so Topic Card, KPI Card, Branch Card, and Table always match 100%
   const counts = {};
-  campaignConfig.topics.forEach(t => { counts[t] = 0; });
-
-  allStaff.forEach(s => {
-    if (!s.is_submitted || !s.submission) return;
-    const byTopic = s.submission.by_topic && typeof s.submission.by_topic === 'object'
-      ? s.submission.by_topic
-      : null;
-    const topicKeys = byTopic
-      ? Object.keys(byTopic).filter(k => byTopic[k] && byTopic[k].tiktok_url)
-      : [];
-    if (topicKeys.length > 0) {
-      topicKeys.forEach(tKey => {
-        counts[tKey] = (counts[tKey] || 0) + 1;
-      });
-    } else {
-      const tKey = s.submission.topic || s.submission.clip_title || '💬 หัวข้ออิสระ / อื่นๆ';
-      counts[tKey] = (counts[tKey] || 0) + 1;
-    }
+  campaignConfig.topics.forEach(t => {
+    counts[t] = allStaff.filter(s => Boolean(getStaffTopicSubmission(s, t))).length;
   });
 
   Object.entries(counts).forEach(([topicName, count]) => {

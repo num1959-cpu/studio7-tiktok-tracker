@@ -79,7 +79,37 @@ const SEED_SUBMISSIONS = {
     "clip_title": "Cover Plus",
     "notes": "",
     "submitted_at": "2026-10-18T14:16:39.239Z",
-    "updated_at": "2026-10-26T14:25:35.381Z"
+    "updated_at": "2026-10-26T14:25:35.381Z",
+    "by_topic": {
+      "Cover Plus": {
+        "emp_id": "13807",
+        "emp_name": "สุนิสา แสนเปา",
+        "shop_code": "412",
+        "shop_name": "ID412 : Studio 7-Big C-Tak",
+        "position": "PIA",
+        "tiktok_url": "https://vt.tiktok.com/ZSgXoJ9JC/",
+        "topic": "Cover Plus",
+        "custom_topic": "",
+        "clip_title": "Cover Plus",
+        "notes": "",
+        "submitted_at": "2026-10-26T14:25:35.381Z",
+        "updated_at": "2026-10-26T14:25:35.381Z"
+      },
+      "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)": {
+        "emp_id": "13807",
+        "emp_name": "สุนิสา แสนเปา",
+        "shop_code": "412",
+        "shop_name": "ID412 : Studio 7-Big C-Tak",
+        "position": "PIA",
+        "tiktok_url": "https://vt.tiktok.com/ZSgXoJ9JC/",
+        "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+        "custom_topic": "",
+        "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+        "notes": "",
+        "submitted_at": "2026-10-18T14:16:39.239Z",
+        "updated_at": "2026-10-18T14:16:39.239Z"
+      }
+    }
   },
   "15229": {
     "emp_id": "15229",
@@ -415,7 +445,37 @@ const SEED_SUBMISSIONS = {
     "clip_title": "Cover Plus",
     "notes": "",
     "submitted_at": "2026-10-18T11:42:48.634Z",
-    "updated_at": "2026-10-22T09:50:02.061Z"
+    "updated_at": "2026-10-22T09:50:02.061Z",
+    "by_topic": {
+      "Cover Plus": {
+        "emp_id": "28487",
+        "emp_name": "เดือนนภา ปะละตุ่น",
+        "shop_code": "412",
+        "shop_name": "ID412 : Studio 7-Big C-Tak",
+        "position": "PIA",
+        "tiktok_url": "https://vt.tiktok.com/ZSgfv1kQe/",
+        "topic": "Cover Plus",
+        "custom_topic": "",
+        "clip_title": "Cover Plus",
+        "notes": "",
+        "submitted_at": "2026-10-22T09:50:02.061Z",
+        "updated_at": "2026-10-22T09:50:02.061Z"
+      },
+      "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)": {
+        "emp_id": "28487",
+        "emp_name": "เดือนนภา ปะละตุ่น",
+        "shop_code": "412",
+        "shop_name": "ID412 : Studio 7-Big C-Tak",
+        "position": "PIA",
+        "tiktok_url": "https://vt.tiktok.com/ZSgfv1kQe/",
+        "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+        "custom_topic": "",
+        "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+        "notes": "",
+        "submitted_at": "2026-10-18T11:42:48.634Z",
+        "updated_at": "2026-10-18T11:42:48.634Z"
+      }
+    }
   },
   "28495": {
     "emp_id": "28495",
@@ -775,6 +835,9 @@ function writeJSON(file, data) {
 }
 
 // Normalize a submission record so it always carries a per-topic `by_topic` map
+const FIRST_ROUND_TOPIC = '🎧 รีวิวอุปกรณ์เสริม BTB(3rd)';
+const FIRST_ROUND_CUTOFF = new Date('2026-10-21T12:00:00Z').getTime();
+
 function normalizeRecord(rec) {
   if (!rec || rec.deleted) return rec;
   const copy = { ...rec };
@@ -796,6 +859,25 @@ function normalizeRecord(rec) {
         notes: copy.notes || '',
         submitted_at: copy.submitted_at || copy.updated_at,
         updated_at: copy.updated_at
+      };
+    }
+
+    // Preserve Round 1 (BTB 3rd) submission if this employee submitted in Round 1 and later updated to a newer topic before multi-topic storage was enabled
+    const firstSubmittedTime = new Date(copy.submitted_at || 0).getTime();
+    if (tKey !== FIRST_ROUND_TOPIC && !byTopic[FIRST_ROUND_TOPIC] && firstSubmittedTime > 0 && firstSubmittedTime <= FIRST_ROUND_CUTOFF) {
+      byTopic[FIRST_ROUND_TOPIC] = {
+        emp_id: copy.emp_id,
+        emp_name: copy.emp_name,
+        shop_code: copy.shop_code,
+        shop_name: copy.shop_name,
+        position: copy.position,
+        tiktok_url: copy.tiktok_url,
+        topic: FIRST_ROUND_TOPIC,
+        custom_topic: '',
+        clip_title: FIRST_ROUND_TOPIC,
+        notes: '',
+        submitted_at: copy.submitted_at,
+        updated_at: copy.submitted_at
       };
     }
   }

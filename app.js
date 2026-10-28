@@ -2,20 +2,68 @@
 let allStaff = [];
 let allBranches = [];
 let campaignConfig = {
-  active_topic: '🎧 รีวิวอุปกรณ์เสริม BTB(3rd)',
+  active_topic: 'Cover Plus',
   campaign_period: 'โจทย์ประจำสัปดาห์ / ประจำเดือน ตุลาคม 2026',
-  deadline: '2026-10-20',
-  rules: 'ทำคลิป TikTok ความยาว 30–60 วินาที แนะนำสินค้าหรือโปรโมชั่นตามหัวข้อที่กำหนด พร้อมติดแฮชแท็กบังคับให้ครบถ้วน',
-  hashtags: '#Studio7 #Com7',
+  deadline: '2026-10-30',
+  rules: 'ทำคลิป TikTok **เน้นพูดรีวิว**ต้องมีการพูดแนะนำ 30–60 วินาที แนะนำสินค้าหรือโปรโมชั่นตามหัวข้อที่กำหนด พร้อมติดแฮชแท็กบังคับให้ครบถ้วน',
+  hashtags: '#Studio7 #Com7#Cover Plus',
   topics: [
-    '🎧 รีวิวอุปกรณ์เสริม BTB(3rd)'
+    '🎧 รีวิวอุปกรณ์เสริม BTB(3rd)',
+    'Cover Plus'
   ]
 };
 let topicCounts = {};
 let selectedStaff = null;
 let currentBranchFilter = 'all';
-let currentTopicFilter = 'all';
+let currentTopicFilter = 'Cover Plus';
+let hasInitializedTopicFilter = false;
 let adminEditingTopics = [];
+
+// Helper: get a staff member's submission for a specific topic (or latest submission when topicFilter === 'all')
+function getStaffTopicSubmission(staff, topicFilter = 'all') {
+  if (!staff || !staff.is_submitted || !staff.submission) return null;
+  const sub = staff.submission;
+  if (!topicFilter || topicFilter === 'all') {
+    return sub.tiktok_url ? sub : null;
+  }
+  if (sub.by_topic && typeof sub.by_topic === 'object' && sub.by_topic[topicFilter]) {
+    const entry = sub.by_topic[topicFilter];
+    if (entry && entry.tiktok_url) return entry;
+  }
+  const staffTopic = sub.topic || sub.clip_title || '';
+  if (staffTopic === topicFilter && sub.tiktok_url) {
+    return sub;
+  }
+  return null;
+}
+
+// Merge two submission records on the client side so per-topic history is preserved
+function mergeClientRecords(existing, incoming) {
+  if (!existing) return incoming;
+  if (!incoming) return existing;
+  if (incoming.deleted) {
+    return new Date(incoming.updated_at || 0) >= new Date(existing.updated_at || 0) ? incoming : existing;
+  }
+  if (existing.deleted) {
+    return new Date(incoming.updated_at || 0) > new Date(existing.updated_at || 0) ? incoming : existing;
+  }
+  const mergedByTopic = {
+    ...(existing.by_topic || {}),
+    ...(incoming.by_topic || {})
+  };
+  for (const [k, v] of Object.entries(existing.by_topic || {})) {
+    const inc = (incoming.by_topic || {})[k];
+    if (inc && new Date(inc.updated_at || 0) >= new Date(v.updated_at || 0)) {
+      mergedByTopic[k] = inc;
+    } else {
+      mergedByTopic[k] = v;
+    }
+  }
+  const isIncomingNewer = new Date(incoming.updated_at || 0) >= new Date(existing.updated_at || 0);
+  const primary = isIncomingNewer ? { ...incoming } : { ...existing };
+  primary.by_topic = mergedByTopic;
+  return primary;
+}
 
 // DOM ready
 document.addEventListener('DOMContentLoaded', () => {
@@ -107,9 +155,12 @@ async function fetchData(showIndicator = false) {
       for (const [empId, localRec] of Object.entries(localSubs)) {
         if (!localRec || !localRec.emp_id) continue;
         const srvRec = serverRaw[empId];
+        const merged = mergeClientRecords(srvRec, localRec);
         if (!srvRec || new Date(localRec.updated_at || 0) > new Date(srvRec.updated_at || 0)) {
-          mergedSubs[empId] = localRec;
+          mergedSubs[empId] = merged;
           needsRestore = true;
+        } else {
+          mergedSubs[empId] = merged;
         }
       }
 
@@ -217,19 +268,24 @@ function renderCampaignUI() {
   // Dashboard Filter Topic Dropdown
   const filterTopic = document.getElementById('filter-topic');
   if (filterTopic) {
-    const prevFilter = filterTopic.value || 'all';
-    filterTopic.innerHTML = '<option value="all">หัวข้อ: ทั้งหมด</option>';
+    filterTopic.innerHTML = '<option value="all">หัวข้อ: ทั้งหมด (รวมทุกแคมเปญ)</option>';
     campaignConfig.topics.forEach(t => {
       const opt = document.createElement('option');
       opt.value = t;
-      opt.textContent = t;
+      opt.textContent = t === campaignConfig.active_topic ? `หัวข้อ: ${t} (⭐ โจทย์หลัก)` : `หัวข้อ: ${t}`;
       filterTopic.appendChild(opt);
     });
-    filterTopic.value = campaignConfig.topics.includes(prevFilter) ? prevFilter : 'all';
+    if (!hasInitializedTopicFilter && campaignConfig.active_topic && campaignConfig.topics.includes(campaignConfig.active_topic)) {
+      currentTopicFilter = campaignConfig.active_topic;
+      hasInitializedTopicFilter = true;
+    } else if (currentTopicFilter !== 'all' && !campaignConfig.topics.includes(currentTopicFilter)) {
+      currentTopicFilter = campaignConfig.active_topic || 'all';
+    }
+    filterTopic.value = currentTopicFilter;
   }
 }
 
-// Handle Topic Select Change (show/hide custom topic input)
+// Handle Topic Select Change on Form (show/hide custom topic input & refresh staff submission status for selected topic)
 function onTopicSelectChange() {
   const topicSelect = document.getElementById('topic-select');
   const customGroup = document.getElementById('custom-topic-group');
@@ -245,6 +301,31 @@ function onTopicSelectChange() {
     customGroup.style.display = 'none';
     customInput.required = false;
   }
+
+  // Refresh staff dropdown icons and profile card for the newly selected topic
+  const shopCode = document.getElementById('shop-select') ? document.getElementById('shop-select').value : '';
+  if (shopCode) {
+    refreshStaffSelectIcons(shopCode);
+  }
+  if (selectedStaff) {
+    updateProfileCard(selectedStaff);
+  }
+}
+
+function refreshStaffSelectIcons(shopCode) {
+  const staffSelect = document.getElementById('staff-select');
+  if (!staffSelect || !shopCode) return;
+  const topicSelect = document.getElementById('topic-select');
+  const formTopic = (topicSelect && topicSelect.value) ? topicSelect.value : (campaignConfig.active_topic || 'all');
+  Array.from(staffSelect.options).forEach(opt => {
+    if (!opt.value) return;
+    const s = allStaff.find(st => st.emp_id === opt.value);
+    if (s) {
+      const isSub = Boolean(getStaffTopicSubmission(s, formTopic));
+      const icon = isSub ? '✅' : '⏳';
+      opt.textContent = `${icon} ${s.full_name} (${s.position}) - รหัส ${s.emp_id}`;
+    }
+  });
 }
 
 // Copy Hashtags button
@@ -299,10 +380,13 @@ function onShopChange() {
   const staffInShop = allStaff.filter(s => s.shop_code === shopCode);
   staffSelect.innerHTML = '<option value="">-- เลือกชื่อพนักงาน (' + staffInShop.length + ' คน) --</option>';
   
+  const topicSelect = document.getElementById('topic-select');
+  const formTopic = (topicSelect && topicSelect.value) ? topicSelect.value : (campaignConfig.active_topic || 'all');
+
   staffInShop.forEach(s => {
     const opt = document.createElement('option');
     opt.value = s.emp_id;
-    const icon = s.is_submitted ? '✅' : '⏳';
+    const icon = getStaffTopicSubmission(s, formTopic) ? '✅' : '⏳';
     opt.textContent = `${icon} ${s.full_name} (${s.position}) - รหัส ${s.emp_id}`;
     staffSelect.appendChild(opt);
   });
@@ -361,24 +445,23 @@ function updateProfileCard(staff) {
   shop.textContent = staff.shop_name;
   pos.textContent = staff.position;
 
-  if (staff.is_submitted && staff.submission) {
+  const currentFormTopic = (topicSelect && topicSelect.value) ? topicSelect.value : (campaignConfig.active_topic || 'all');
+  const subForTopic = getStaffTopicSubmission(staff, currentFormTopic);
+
+  if (subForTopic) {
     badge.className = 'badge badge-submitted';
-    badge.textContent = '✅ ส่งคลิปแล้ว';
+    badge.textContent = '✅ ส่งคลิปหัวข้อนี้แล้ว';
     prevBox.style.display = 'block';
-    prevTime.textContent = new Date(staff.submission.updated_at).toLocaleString('th-TH');
-    
-    // Auto populate existing data if inputs are empty
-    if (!urlInput.value) urlInput.value = staff.submission.tiktok_url || '';
-    if (staff.submission.topic && campaignConfig.topics.includes(staff.submission.topic)) {
-      topicSelect.value = staff.submission.topic;
-      onTopicSelectChange();
-    }
-    if (customInput && staff.submission.custom_topic) {
-      customInput.value = staff.submission.custom_topic;
+    prevTime.textContent = `${new Date(subForTopic.updated_at).toLocaleString('th-TH')} (หัวข้อ: ${currentFormTopic})`;
+
+    // Auto populate existing URL for this topic if empty
+    if (!urlInput.value) urlInput.value = subForTopic.tiktok_url || '';
+    if (customInput && subForTopic.custom_topic) {
+      customInput.value = subForTopic.custom_topic;
     }
   } else {
     badge.className = 'badge badge-pending';
-    badge.textContent = '⏳ ยังไม่เคยส่งคลิป';
+    badge.textContent = `⏳ ยังไม่ได้ส่งหัวข้อ "${currentFormTopic}"`;
     prevBox.style.display = 'none';
   }
 
@@ -494,11 +577,25 @@ async function handleFormSubmit(e) {
 
 // ==================== DASHBOARD RENDERING ====================
 function renderDashboard() {
+  const filterTopicEl = document.getElementById('filter-topic');
+  if (filterTopicEl && filterTopicEl.value !== currentTopicFilter) {
+    filterTopicEl.value = currentTopicFilter;
+  }
+
   const total = allStaff.length;
-  const submitted = allStaff.filter(s => s.is_submitted).length;
+  const submitted = allStaff.filter(s => Boolean(getStaffTopicSubmission(s, currentTopicFilter))).length;
   const pending = total - submitted;
   const pct = total > 0 ? Math.round((submitted / total) * 100) : 0;
-  const completeBranches = allBranches.filter(b => b.percent === 100).length;
+
+  let completeBranches = 0;
+  allBranches.forEach(b => {
+    const branchStaff = allStaff.filter(s => s.shop_code === b.shop_code);
+    const bTotal = branchStaff.length || b.total_staff;
+    const bSub = branchStaff.filter(s => Boolean(getStaffTopicSubmission(s, currentTopicFilter))).length;
+    if (bTotal > 0 && bSub === bTotal) {
+      completeBranches += 1;
+    }
+  });
 
   // KPI Cards
   document.getElementById('kpi-total').textContent = total;
@@ -507,9 +604,31 @@ function renderDashboard() {
   document.getElementById('kpi-percent').textContent = pct + '%';
   document.getElementById('kpi-complete-branches').textContent = `${completeBranches} / ${allBranches.length}`;
 
-  // Update Pending Dot in Nav
+  // Update KPI Labels/Subtitles to show which topic is currently reflected
+  const topicDesc = currentTopicFilter === 'all'
+    ? 'รวมทุกหัวข้อแคมเปญ'
+    : `หัวข้อ: ${currentTopicFilter}`;
+  const kpiSubmittedLabel = document.getElementById('kpi-submitted-label');
+  if (kpiSubmittedLabel) {
+    kpiSubmittedLabel.textContent = currentTopicFilter === 'all' ? 'ส่งคลิปแล้ว (ทุกหัวข้อ)' : `ส่งคลิปแล้ว (${currentTopicFilter})`;
+  }
+  const kpiPendingSub = document.getElementById('kpi-pending-sub');
+  if (kpiPendingSub) kpiPendingSub.textContent = topicDesc;
+  const kpiBranchSub = document.getElementById('kpi-branch-sub');
+  if (kpiBranchSub) kpiBranchSub.textContent = currentTopicFilter === 'all' ? 'PIA ส่งครบทุกคน' : `ครบทุกคนใน ${currentTopicFilter}`;
+
+  // Update Status Filter Dropdown options with counts for the current topic
+  const filterStatusEl = document.getElementById('filter-status');
+  if (filterStatusEl && filterStatusEl.options.length >= 3) {
+    filterStatusEl.options[0].textContent = `สถานะ: ทั้งหมด (${total} คน)`;
+    filterStatusEl.options[1].textContent = `✅ ส่งคลิปแล้ว (${submitted} คน)`;
+    filterStatusEl.options[2].textContent = `⏳ ยังไม่ส่ง (${pending} คน)`;
+  }
+
+  // Update Pending Dot in Nav (based on active campaign topic)
+  const activeTopicPending = allStaff.filter(s => !getStaffTopicSubmission(s, campaignConfig.active_topic || 'all')).length;
   const dot = document.getElementById('dash-badge-pending');
-  if (dot) dot.style.display = pending > 0 ? 'block' : 'none';
+  if (dot) dot.style.display = activeTopicPending > 0 ? 'block' : 'none';
 
   // Render Topic Breakdown Cards
   renderTopicBreakdown();
@@ -518,7 +637,7 @@ function renderDashboard() {
   renderBranchCards();
 
   // Render Table
-  applyTableFilters();
+  applyTableFilters(true);
 }
 
 // Render Topic Breakdown Cards
@@ -527,12 +646,32 @@ function renderTopicBreakdown() {
   if (!grid) return;
   grid.innerHTML = '';
 
-  // Compute live counts from allStaff
+  const allChip = document.getElementById('all-topics-chip');
+  if (allChip) {
+    if (currentTopicFilter === 'all') {
+      allChip.classList.add('active');
+    } else {
+      allChip.classList.remove('active');
+    }
+  }
+
+  // Compute live counts per topic from allStaff (supports multi-topic by_topic)
   const counts = {};
   campaignConfig.topics.forEach(t => { counts[t] = 0; });
 
   allStaff.forEach(s => {
-    if (s.is_submitted && s.submission) {
+    if (!s.is_submitted || !s.submission) return;
+    const byTopic = s.submission.by_topic && typeof s.submission.by_topic === 'object'
+      ? s.submission.by_topic
+      : null;
+    const topicKeys = byTopic
+      ? Object.keys(byTopic).filter(k => byTopic[k] && byTopic[k].tiktok_url)
+      : [];
+    if (topicKeys.length > 0) {
+      topicKeys.forEach(tKey => {
+        counts[tKey] = (counts[tKey] || 0) + 1;
+      });
+    } else {
       const tKey = s.submission.topic || s.submission.clip_title || '💬 หัวข้ออิสระ / อื่นๆ';
       counts[tKey] = (counts[tKey] || 0) + 1;
     }
@@ -545,6 +684,9 @@ function renderTopicBreakdown() {
     card.className = `topic-card ${isSelected ? 'selected' : ''} ${isMain ? 'is-active-challenge' : ''}`;
     card.onclick = () => selectTopicCard(topicName);
 
+    const totalStaffCount = allStaff.length || 51;
+    const pct = totalStaffCount > 0 ? Math.round((count / totalStaffCount) * 100) : 0;
+
     card.innerHTML = `
       <div class="topic-card-top">
         <div class="topic-card-title">${escapeHtml(topicName)}</div>
@@ -553,9 +695,11 @@ function renderTopicBreakdown() {
       <div class="topic-card-bottom">
         <div>
           <span class="topic-count-num">${count}</span>
-          <span class="topic-count-unit">คลิป</span>
+          <span class="topic-count-unit">/ ${totalStaffCount} คน (${pct}%)</span>
         </div>
-        <span style="font-size: 0.76rem; color: #64748b;">คลิกเพื่อกรองดู</span>
+        <span style="font-size: 0.76rem; color: ${isSelected ? '#15803d' : '#64748b'}; font-weight: ${isSelected ? '600' : '400'};">
+          ${isSelected ? '✅ กำลังแสดงผลหัวข้อนี้' : 'คลิกเพื่อกรองดู'}
+        </span>
       </div>
     `;
 
@@ -564,31 +708,30 @@ function renderTopicBreakdown() {
 }
 
 function selectTopicCard(topicName) {
-  if (currentTopicFilter === topicName) {
-    currentTopicFilter = 'all';
-  } else {
-    currentTopicFilter = topicName;
-  }
+  currentTopicFilter = topicName;
   const filterTopicEl = document.getElementById('filter-topic');
   if (filterTopicEl) filterTopicEl.value = currentTopicFilter;
-  renderTopicBreakdown();
-  applyTableFilters();
+  renderDashboard();
 }
 
 function clearTopicFilter() {
   currentTopicFilter = 'all';
   const filterTopicEl = document.getElementById('filter-topic');
   if (filterTopicEl) filterTopicEl.value = 'all';
-  renderTopicBreakdown();
-  applyTableFilters();
+  renderDashboard();
 }
 
-// Render Branch Cards Grid
+// Render Branch Cards Grid (filtered by currentTopicFilter)
 function renderBranchCards() {
   const container = document.getElementById('branch-cards-grid');
   container.innerHTML = '';
 
   allBranches.forEach(b => {
+    const branchStaff = allStaff.filter(s => s.shop_code === b.shop_code);
+    const totalStaff = branchStaff.length || b.total_staff;
+    const submittedCount = branchStaff.filter(s => Boolean(getStaffTopicSubmission(s, currentTopicFilter))).length;
+    const percent = totalStaff > 0 ? Math.round((submittedCount / totalStaff) * 100) : 0;
+
     const card = document.createElement('div');
     const isSelected = currentBranchFilter === b.shop_code;
     card.className = `branch-card ${isSelected ? 'selected' : ''}`;
@@ -596,12 +739,12 @@ function renderBranchCards() {
 
     let statusClass = 'pending';
     let statusText = 'ยังไม่มีคนส่ง';
-    if (b.percent === 100) {
+    if (percent === 100 && totalStaff > 0) {
       statusClass = 'complete';
       statusText = 'ครบ 100%';
-    } else if (b.submitted_count > 0) {
+    } else if (submittedCount > 0) {
       statusClass = 'progress';
-      statusText = `ส่งแล้ว ${b.percent}%`;
+      statusText = `ส่งแล้ว ${percent}%`;
     }
 
     card.innerHTML = `
@@ -614,11 +757,11 @@ function renderBranchCards() {
       </div>
 
       <div class="branch-progress-bar-wrap">
-        <div class="branch-progress-bar ${statusClass}" style="width: ${b.percent}%"></div>
+        <div class="branch-progress-bar ${statusClass}" style="width: ${percent}%"></div>
       </div>
 
       <div class="branch-card-footer">
-        <span><strong>${b.submitted_count}</strong> / ${b.total_staff} คน</span>
+        <span><strong>${submittedCount}</strong> / ${totalStaff} คน</span>
         <button class="btn-line-mini" onclick="event.stopPropagation(); openLineModal('${b.shop_code}')" title="คัดลอกรายชื่อตามงาน LINE สาขานี้">
           📱 ตามงาน LINE
         </button>
@@ -637,38 +780,40 @@ function selectBranchCard(shopCode) {
   }
   document.getElementById('filter-branch').value = currentBranchFilter;
   renderBranchCards();
-  applyTableFilters();
+  applyTableFilters(true);
 }
 
 function clearBranchFilter() {
   currentBranchFilter = 'all';
   document.getElementById('filter-branch').value = 'all';
   renderBranchCards();
-  applyTableFilters();
+  applyTableFilters(true);
 }
 
 // Apply Table Filters
-function applyTableFilters() {
+function applyTableFilters(fromDashboard = false) {
   const search = (document.getElementById('table-search').value || '').toLowerCase().trim();
   const statusFilter = document.getElementById('filter-status').value;
   const branchFilter = document.getElementById('filter-branch').value;
   const topicFilterEl = document.getElementById('filter-topic');
-  const topicFilter = topicFilterEl ? topicFilterEl.value : 'all';
+  const topicFilter = topicFilterEl ? topicFilterEl.value : currentTopicFilter;
 
+  const topicChangedFromDropdown = !fromDashboard && topicFilter !== currentTopicFilter;
   currentBranchFilter = branchFilter;
   currentTopicFilter = topicFilter;
 
-  let filtered = allStaff.filter(s => {
-    // Status Filter
-    if (statusFilter === 'submitted' && !s.is_submitted) return false;
-    if (statusFilter === 'pending' && s.is_submitted) return false;
+  if (topicChangedFromDropdown) {
+    renderDashboard();
+    return;
+  }
 
-    // Topic Filter
-    if (topicFilter !== 'all') {
-      if (!s.is_submitted || !s.submission) return false;
-      const staffTopic = s.submission.topic || s.submission.clip_title || '';
-      if (staffTopic !== topicFilter) return false;
-    }
+  let filtered = allStaff.filter(s => {
+    const subForTopic = getStaffTopicSubmission(s, currentTopicFilter);
+    const isSubForTopic = Boolean(subForTopic);
+
+    // Status Filter (evaluated specifically for the selected topic)
+    if (statusFilter === 'submitted' && !isSubForTopic) return false;
+    if (statusFilter === 'pending' && isSubForTopic) return false;
 
     // Branch Filter
     if (branchFilter !== 'all' && s.shop_code !== branchFilter) return false;
@@ -679,14 +824,26 @@ function applyTableFilters() {
       const matchId = s.emp_id.includes(search);
       const matchShop = s.shop_name.toLowerCase().includes(search);
       const matchPos = s.position.toLowerCase().includes(search);
-      const matchTopic = s.submission && (s.submission.clip_title || '').toLowerCase().includes(search);
+      const matchTopic = subForTopic && (subForTopic.clip_title || '').toLowerCase().includes(search);
       if (!matchName && !matchId && !matchShop && !matchPos && !matchTopic) return false;
     }
 
     return true;
   });
 
-  document.getElementById('table-count-label').textContent = `${filtered.length} คน (จากทั้งหมด ${allStaff.length} คน)`;
+  // Put submitted staff for the current topic at the top when viewing 'all' statuses on a specific topic
+  if (statusFilter === 'all' && currentTopicFilter !== 'all') {
+    filtered.sort((a, b) => {
+      const aSub = Boolean(getStaffTopicSubmission(a, currentTopicFilter)) ? 1 : 0;
+      const bSub = Boolean(getStaffTopicSubmission(b, currentTopicFilter)) ? 1 : 0;
+      if (bSub !== aSub) return bSub - aSub;
+      return parseInt(a.shop_code) - parseInt(b.shop_code);
+    });
+  }
+
+  const submittedInFiltered = filtered.filter(s => Boolean(getStaffTopicSubmission(s, currentTopicFilter))).length;
+  const topicSuffix = currentTopicFilter === 'all' ? 'รวมทุกหัวข้อ' : `หัวข้อ "${currentTopicFilter}"`;
+  document.getElementById('table-count-label').textContent = `${filtered.length} คน • ส่งแล้ว ${submittedInFiltered} คน (${topicSuffix})`;
   renderTable(filtered);
 }
 
@@ -708,29 +865,31 @@ function renderTable(staffList) {
 
   staffList.forEach((s, idx) => {
     const tr = document.createElement('tr');
-    const isSub = s.is_submitted && s.submission;
+    const sub = getStaffTopicSubmission(s, currentTopicFilter);
+    const isSub = Boolean(sub);
 
     const statusBadge = isSub
       ? '<span class="badge badge-submitted">✅ ส่งแล้ว</span>'
       : '<span class="badge badge-pending">⏳ ยังไม่ส่ง</span>';
 
     const tiktokLink = isSub
-      ? `<a href="${s.submission.tiktok_url}" target="_blank" class="tiktok-link-btn" title="${s.submission.tiktok_url}">
+      ? `<a href="${sub.tiktok_url}" target="_blank" class="tiktok-link-btn" title="${sub.tiktok_url}">
           <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M19.589 6.686a4.793 4.793 0 0 1-3.77-4.245V2h-3.445v13.672a2.896 2.896 0 0 1-5.201 1.743 2.895 2.895 0 0 1 2.312-4.644c.314 0 .619.05.904.144V9.42a6.333 6.333 0 0 0-.904-.065c-3.513 0-6.36 2.848-6.36 6.361 0 3.514 2.847 6.361 6.36 6.361 3.514 0 6.361-2.847 6.361-6.361V8.536a8.212 8.212 0 0 0 4.743 1.511v-3.361z"/></svg>
           เปิดดูคลิป
          </a>`
       : '<span style="color: #cbd5e1;">-</span>';
 
     const clipTitle = isSub
-      ? `<span title="${escapeHtml(s.submission.clip_title)}">${escapeHtml(s.submission.clip_title || '-')}</span>`
+      ? `<span title="${escapeHtml(sub.clip_title)}">${escapeHtml(sub.clip_title || '-')}</span>`
       : '<span style="color: #cbd5e1;">-</span>';
 
     const dateStr = isSub
-      ? `<span style="font-size: 0.78rem; color: #64748b;">${new Date(s.submission.updated_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' })}</span>`
+      ? `<span style="font-size: 0.78rem; color: #64748b;">${new Date(sub.updated_at).toLocaleString('th-TH', { dateStyle: 'short', timeStyle: 'short' })}</span>`
       : '<span style="color: #cbd5e1;">-</span>';
 
+    const topicArg = isSub ? (sub.topic || currentTopicFilter) : currentTopicFilter;
     const actionBtn = isSub
-      ? `<button class="btn-delete-row" onclick="deleteSubmission('${s.emp_id}', '${escapeHtml(s.full_name)}')" title="ลบข้อมูลการส่งคลิปนี้">🗑️</button>`
+      ? `<button class="btn-delete-row" onclick="deleteSubmission('${s.emp_id}', '${escapeHtml(s.full_name)}', '${escapeHtml(topicArg)}')" title="ลบข้อมูลการส่งคลิปนี้">🗑️</button>`
       : '';
 
     tr.innerHTML = `
@@ -750,18 +909,24 @@ function renderTable(staffList) {
   });
 }
 
-// Delete Submission
-async function deleteSubmission(empId, name) {
-  if (!confirm(`คุณต้องการลบข้อมูลการส่งคลิปของ "${name}" (รหัส ${empId}) ใช่หรือไม่?`)) return;
+// Delete Submission (supports deleting a specific topic's submission)
+async function deleteSubmission(empId, name, topicName = '') {
+  const topicLabel = topicName && topicName !== 'all' ? ` (หัวข้อ: ${topicName})` : '';
+  if (!confirm(`คุณต้องการลบข้อมูลการส่งคลิปของ "${name}" (รหัส ${empId})${topicLabel} ใช่หรือไม่?`)) return;
 
   try {
-    const res = await fetch(`/api/submission/${empId}`, { method: 'DELETE' });
+    const query = topicName && topicName !== 'all' ? `?topic=${encodeURIComponent(topicName)}` : '';
+    const res = await fetch(`/api/submission/${empId}${query}`, { method: 'DELETE' });
     const result = await res.json();
     if (result.success) {
       const localSubs = getLocalSubmissionsBackup();
-      localSubs[empId] = { emp_id: empId, deleted: true, updated_at: new Date().toISOString() };
+      if (result.data) {
+        localSubs[empId] = result.data;
+      } else {
+        localSubs[empId] = { emp_id: empId, deleted: true, updated_at: new Date().toISOString() };
+      }
       saveLocalSubmissionsBackup(localSubs);
-      showToast('🗑️ ลบข้อมูลเรียบร้อยแล้ว');
+      showToast('🗑️ ' + (result.message || 'ลบข้อมูลเรียบร้อยแล้ว'));
       fetchData();
     } else {
       showToast('❌ ' + result.message);
@@ -781,15 +946,20 @@ function openLineModal(target = 'all') {
   let headerMsg = '';
 
   const originUrl = window.location.origin;
-  const activeChallenge = campaignConfig.active_topic || 'หัวข้อประจำแคมเปญ';
+  const targetTopic = (currentTopicFilter && currentTopicFilter !== 'all')
+    ? currentTopicFilter
+    : (campaignConfig.active_topic || 'all');
+  const activeChallenge = targetTopic === 'all'
+    ? (campaignConfig.active_topic || 'หัวข้อประจำแคมเปญ')
+    : targetTopic;
   const deadlineText = campaignConfig.deadline
     ? `⏰ กำหนดส่งภายใน: ${new Date(campaignConfig.deadline).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })}`
     : '';
   const hashtagText = campaignConfig.hashtags ? `🏷️ แฮชแท็กบังคับ: ${campaignConfig.hashtags}` : '';
 
   if (target === 'all') {
-    title.textContent = '📢 ข้อความตามงาน LINE (รวมทุกสาขาที่ยังไม่ส่ง)';
-    missingStaff = allStaff.filter(s => !s.is_submitted);
+    title.textContent = `📢 ข้อความตามงาน LINE — หัวข้อ: ${activeChallenge}`;
+    missingStaff = allStaff.filter(s => !getStaffTopicSubmission(s, targetTopic));
     
     // Group by branch
     const byBranch = {};
@@ -811,7 +981,7 @@ function openLineModal(target = 'all') {
 ${deadlineText}
 ${hashtagText}
 ความคืบหน้าภาพรวม (เฉพาะ PIA): ส่งแล้ว ${allStaff.length - missingStaff.length}/${allStaff.length} คน (ขาดอีก ${missingStaff.length} คน)
-${details}
+${details || '\n🎉 พนักงานตำแหน่ง PIA ส่งครบทุกคนแล้วในหัวข้อนี้!\n'}
 👉 ลิงก์สำหรับส่งคลิป TikTok:
 ${originUrl}
 
@@ -821,9 +991,12 @@ ${originUrl}
     // Specific branch
     const branch = allBranches.find(b => b.shop_code === target);
     const branchName = branch ? branch.shop_name : `สาขา ${target}`;
-    missingStaff = allStaff.filter(s => s.shop_code === target && !s.is_submitted);
+    const branchStaff = allStaff.filter(s => s.shop_code === target);
+    const branchTotal = branchStaff.length || (branch ? branch.total_staff : 0);
+    missingStaff = branchStaff.filter(s => !getStaffTopicSubmission(s, targetTopic));
+    const branchSubmitted = branchTotal - missingStaff.length;
 
-    title.textContent = `📢 ข้อความตามงาน LINE: ${branchName} (เฉพาะ PIA)`;
+    title.textContent = `📢 ตามงาน LINE: ${branchName} (${activeChallenge})`;
 
     let staffListText = '';
     missingStaff.forEach((s, i) => {
@@ -834,7 +1007,7 @@ ${originUrl}
 สาขา: ${branchName}
 ${deadlineText}
 ${hashtagText}
-สถานะ PIA: ส่งแล้ว ${branch ? branch.submitted_count : 0}/${branch ? branch.total_staff : 0} คน (คงเหลือ ${missingStaff.length} คน)
+สถานะ PIA: ส่งแล้ว ${branchSubmitted}/${branchTotal} คน (คงเหลือ ${missingStaff.length} คน)
 
 รายชื่อผู้ที่ยังไม่ได้ส่ง:
 ${staffListText || '  (ตำแหน่ง PIA ส่งครบทุกคนแล้ว 🎉)\n'}
@@ -993,6 +1166,8 @@ async function saveCampaignConfig() {
     const result = await res.json();
     if (result.success) {
       campaignConfig = result.data;
+      currentTopicFilter = campaignConfig.active_topic || 'all';
+      hasInitializedTopicFilter = true;
       renderCampaignUI();
       renderDashboard();
       showToast('🎉 บันทึกการตั้งค่าหัวข้อแคมเปญเรียบร้อยแล้ว');
@@ -1008,7 +1183,10 @@ async function saveCampaignConfig() {
 
 // Export Excel/CSV
 function exportExcel() {
-  window.location.href = '/api/export';
+  const query = currentTopicFilter && currentTopicFilter !== 'all'
+    ? `?topic=${encodeURIComponent(currentTopicFilter)}`
+    : '';
+  window.location.href = `/api/export${query}`;
   showToast('📥 กำลังดาวน์โหลดไฟล์รายงาน Excel / CSV...');
 }
 

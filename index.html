@@ -57,12 +57,12 @@
             <span class="brief-tag">🎯 โจทย์ประจำสัปดาห์ / เดือน</span>
             <span id="brief-deadline" class="brief-deadline">⏰ ปิดรับ: -</span>
           </div>
-          <h3 id="brief-active-topic" class="brief-topic-title">🎧 รีวิวอุปกรณ์เสริม BTB(3rd)</h3>
-          <p id="brief-rules" class="brief-rules-text">ทำคลิป TikTok ความยาว 30–60 วินาที แนะนำสินค้าหรือโปรโมชั่นตามหัวข้อที่กำหนด พร้อมติดแฮชแท็กบังคับให้ครบถ้วน</p>
+          <h3 id="brief-active-topic" class="brief-topic-title">Cover Plus</h3>
+          <p id="brief-rules" class="brief-rules-text">ทำคลิป TikTok **เน้นพูดรีวิว**ต้องมีการพูดแนะนำ 30–60 วินาที แนะนำสินค้าหรือโปรโมชั่นตามหัวข้อที่กำหนด พร้อมติดแฮชแท็กบังคับให้ครบถ้วน</p>
           <div class="brief-hashtag-box">
             <div class="hashtag-info">
               <span class="hashtag-label">แฮชแท็ก:</span>
-              <code id="brief-hashtags" class="hashtag-code">#Studio7 #Com7</code>
+              <code id="brief-hashtags" class="hashtag-code">#Studio7 #Com7#Cover Plus</code>
             </div>
             <button type="button" class="btn-copy-hashtag" onclick="copyHashtags()">📋 คัดลอก</button>
           </div>
@@ -229,7 +229,7 @@
           <div class="kpi-card">
             <div class="kpi-icon success">✅</div>
             <div class="kpi-body">
-              <span class="kpi-label">ส่งคลิปแล้ว</span>
+              <span id="kpi-submitted-label" class="kpi-label">ส่งคลิปแล้ว</span>
               <span id="kpi-submitted" class="kpi-value">0</span>
               <span id="kpi-percent" class="kpi-badge-pct">0%</span>
             </div>
@@ -240,7 +240,7 @@
             <div class="kpi-body">
               <span class="kpi-label">ยังไม่ส่งคลิป</span>
               <span id="kpi-pending" class="kpi-value">51</span>
-              <span class="kpi-sub">รอส่งมอบผลงาน</span>
+              <span id="kpi-pending-sub" class="kpi-sub">รอส่งมอบผลงาน</span>
             </div>
           </div>
 
@@ -249,7 +249,7 @@
             <div class="kpi-body">
               <span class="kpi-label">สาขาที่ส่งครบ 100%</span>
               <span id="kpi-complete-branches" class="kpi-value">0 / 13</span>
-              <span class="kpi-sub">PIA ส่งครบทุกคน</span>
+              <span id="kpi-branch-sub" class="kpi-sub">PIA ส่งครบทุกคน</span>
             </div>
           </div>
 
@@ -260,10 +260,10 @@
           <div class="section-card-header">
             <div>
               <h3>📊 สรุปยอดส่งคลิปแยกตามหัวข้อ (Topic Breakdown)</h3>
-              <p>โจทย์หลักปัจจุบัน: <strong id="dash-active-topic-label" style="color: #0f172a;">-</strong> • คลิกที่หัวข้อเพื่อกรองดูรายชื่อในตารางด้านล่าง</p>
+              <p>โจทย์หลักปัจจุบัน: <strong id="dash-active-topic-label" style="color: #0f172a;">-</strong> • คลิกที่หัวข้อเพื่อแสดงยอด KPI, รายสาขา และรายชื่อของหัวข้อนั้น</p>
             </div>
             <div class="filter-chip-group">
-              <button class="chip" onclick="clearTopicFilter()">ดูทุกหัวข้อ</button>
+              <button id="all-topics-chip" class="chip" onclick="clearTopicFilter()">ดูทุกหัวข้อ (รวม)</button>
             </div>
           </div>
           <div id="topic-breakdown-grid" class="topic-grid">

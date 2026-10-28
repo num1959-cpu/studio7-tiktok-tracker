@@ -26,45 +26,88 @@ const hasPublicFolder = fs.existsSync(path.join(__dirname, 'public'));
 const PUBLIC_DIR = hasPublicFolder ? path.join(__dirname, 'public') : __dirname;
 
 const DEFAULT_CAMPAIGN = {
-  active_topic: '🎧 รีวิวอุปกรณ์เสริม BTB(3rd)',
+  active_topic: 'Cover Plus',
   campaign_period: 'โจทย์ประจำสัปดาห์ / ประจำเดือน ตุลาคม 2026',
-  deadline: '2026-10-20',
-  rules: 'ทำคลิป TikTok ความยาว 30–60 วินาที แนะนำสินค้าหรือโปรโมชั่นตามหัวข้อที่กำหนด พร้อมติดแฮชแท็กบังคับให้ครบถ้วน',
-  hashtags: '#Studio7 #Com7',
+  deadline: '2026-10-30',
+  rules: 'ทำคลิป TikTok **เน้นพูดรีวิว**ต้องมีการพูดแนะนำ 30–60 วินาที แนะนำสินค้าหรือโปรโมชั่นตามหัวข้อที่กำหนด พร้อมติดแฮชแท็กบังคับให้ครบถ้วน',
+  hashtags: '#Studio7 #Com7#Cover Plus',
   topics: [
-    '🎧 รีวิวอุปกรณ์เสริม BTB(3rd)'
+    '🎧 รีวิวอุปกรณ์เสริม BTB(3rd)',
+    'Cover Plus'
   ]
 };
 
 // Built-in seed submissions so Render redeployments never wipe existing submissions
 const SEED_SUBMISSIONS = {
-  "28335": {
-    "emp_id": "28335",
-    "emp_name": "อัญนิกา ใสดี",
-    "shop_code": "586",
-    "shop_name": "ID586 : Studio 7-Lotus-Phetchabun",
+  "11507": {
+    "emp_id": "11507",
+    "emp_name": "อมราวดี ทาทองมา",
+    "shop_code": "413",
+    "shop_name": "ID413 : Studio 7-V-Square-Nakhonsawan",
     "position": "PIA",
-    "tiktok_url": "https://www.tt.site/t/ZSgNmJgut/",
+    "tiktok_url": "https://vt.tiktok.com/ZSghMaUnU/",
     "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
     "custom_topic": "",
     "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
     "notes": "",
-    "submitted_at": "2026-10-16T10:01:29.008Z",
-    "updated_at": "2026-10-16T10:01:29.008Z"
+    "submitted_at": "2026-10-19T07:51:14.666Z",
+    "updated_at": "2026-10-19T07:51:24.775Z"
   },
-  "34918": {
-    "emp_id": "34918",
-    "emp_name": "ลลิชา สังข์ชัย",
-    "shop_code": "586",
-    "shop_name": "ID586 : Studio 7-Lotus-Phetchabun",
+  "13492": {
+    "emp_id": "13492",
+    "emp_name": "วราวุฒิ เพชร์แจ่ม",
+    "shop_code": "282",
+    "shop_name": "ID282 : Studio 7-Big C-Kamphaengphet",
     "position": "PIA",
-    "tiktok_url": "https://vt.tiktok.com/ZSgNmayeA/",
+    "tiktok_url": "https://vt.tiktok.com/ZSgh4yTe6/",
     "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
     "custom_topic": "",
     "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
     "notes": "",
-    "submitted_at": "2026-10-16T10:04:10.614Z",
-    "updated_at": "2026-10-16T10:04:10.614Z"
+    "submitted_at": "2026-10-19T10:40:50.466Z",
+    "updated_at": "2026-10-19T10:40:50.466Z"
+  },
+  "13807": {
+    "emp_id": "13807",
+    "emp_name": "สุนิสา แสนเปา",
+    "shop_code": "412",
+    "shop_name": "ID412 : Studio 7-Big C-Tak",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgXoJ9JC/",
+    "topic": "Cover Plus",
+    "custom_topic": "",
+    "clip_title": "Cover Plus",
+    "notes": "",
+    "submitted_at": "2026-10-18T14:16:39.239Z",
+    "updated_at": "2026-10-26T14:25:35.381Z"
+  },
+  "15229": {
+    "emp_id": "15229",
+    "emp_name": "วันชนะ พรหมบัณฑิต",
+    "shop_code": "2466",
+    "shop_name": "ID2466 : Studio 7-Lotus-Uttaradit",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgSJYY1p/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T06:50:26.287Z",
+    "updated_at": "2026-10-20T06:50:26.287Z"
+  },
+  "15765": {
+    "emp_id": "15765",
+    "emp_name": "สุวีณา เม่นขาว",
+    "shop_code": "246",
+    "shop_name": "ID246 : Studio 7-Central-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgh65REX/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T07:42:32.550Z",
+    "updated_at": "2026-10-19T07:43:05.570Z"
   },
   "17591": {
     "emp_id": "17591",
@@ -80,6 +123,160 @@ const SEED_SUBMISSIONS = {
     "submitted_at": "2026-10-18T10:27:15.622Z",
     "updated_at": "2026-10-18T10:27:30.124Z"
   },
+  "18022": {
+    "emp_id": "18022",
+    "emp_name": "ณัฐกานต์ กาญจนาธนพัฒน์",
+    "shop_code": "282",
+    "shop_name": "ID282 : Studio 7-Big C-Kamphaengphet",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgh9gtrS/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T10:04:20.572Z",
+    "updated_at": "2026-10-19T10:04:20.572Z"
+  },
+  "18577": {
+    "emp_id": "18577",
+    "emp_name": "สุภาภรณ์ ขันกะสิกรรม",
+    "shop_code": "413",
+    "shop_name": "ID413 : Studio 7-V-Square-Nakhonsawan",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSghSkgkf/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T06:43:13.422Z",
+    "updated_at": "2026-10-20T08:36:10.512Z"
+  },
+  "20162": {
+    "emp_id": "20162",
+    "emp_name": "สุนันท์ สวัสดิ์พูน",
+    "shop_code": "389",
+    "shop_name": "ID389 : Studio 7-Lotus-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSghKU6pr/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T12:51:28.208Z",
+    "updated_at": "2026-10-19T12:51:51.459Z"
+  },
+  "20188": {
+    "emp_id": "20188",
+    "emp_name": "พีรพงศ์ จันทร์เดช",
+    "shop_code": "2522",
+    "shop_name": "ID2522 : Studio7-Big C-Mueang-Sukhothai",
+    "position": "PIA",
+    "tiktok_url": "https://www.tt.site/t/ZSgrpH91e/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T04:06:46.012Z",
+    "updated_at": "2026-10-19T04:06:58.548Z"
+  },
+  "20323": {
+    "emp_id": "20323",
+    "emp_name": "สิณีนารถ ทิพย์โสตร์",
+    "shop_code": "389",
+    "shop_name": "ID389 : Studio 7-Lotus-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgSdEqLm/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T07:17:49.334Z",
+    "updated_at": "2026-10-20T07:17:56.887Z"
+  },
+  "21365": {
+    "emp_id": "21365",
+    "emp_name": "นพพล พุกเปี่ยม",
+    "shop_code": "246",
+    "shop_name": "ID246 : Studio 7-Central-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgSB9fJF/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T09:12:06.554Z",
+    "updated_at": "2026-10-20T09:12:06.554Z"
+  },
+  "22712": {
+    "emp_id": "22712",
+    "emp_name": "ฐานิศา ปัญญา",
+    "shop_code": "389",
+    "shop_name": "ID389 : Studio 7-Lotus-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgh74gY4/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T12:07:04.114Z",
+    "updated_at": "2026-10-19T12:07:04.114Z"
+  },
+  "23037": {
+    "emp_id": "23037",
+    "emp_name": "มนต์ชัย คงที่อยู่",
+    "shop_code": "586",
+    "shop_name": "ID586 : Studio 7-Lotus-Phetchabun",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSggrLATR/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T07:38:08.929Z",
+    "updated_at": "2026-10-28T05:24:42.232Z"
+  },
+  "23454": {
+    "emp_id": "23454",
+    "emp_name": "สุภัสสร สายถิ่น",
+    "shop_code": "420",
+    "shop_name": "ID420 : Studio 7-MarkFour-Phrae",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSg6K4vSL/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-18T11:33:16.922Z",
+    "updated_at": "2026-10-18T11:33:16.922Z"
+  },
+  "24711": {
+    "emp_id": "24711",
+    "emp_name": "ภูมินทร์ อินต๊ะจักร",
+    "shop_code": "420",
+    "shop_name": "ID420 : Studio 7-MarkFour-Phrae",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgMdaxDa/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-18T11:38:07.263Z",
+    "updated_at": "2026-10-18T11:38:07.263Z"
+  },
+  "24971": {
+    "emp_id": "24971",
+    "emp_name": "ธัญน์สิริ ศรีใส",
+    "shop_code": "413",
+    "shop_name": "ID413 : Studio 7-V-Square-Nakhonsawan",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSghbw97Q/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T11:57:51.060Z",
+    "updated_at": "2026-10-19T11:57:51.060Z"
+  },
   "25141": {
     "emp_id": "25141",
     "emp_name": "อรอนงค์ หัสเดช",
@@ -93,6 +290,398 @@ const SEED_SUBMISSIONS = {
     "notes": "",
     "submitted_at": "2026-10-18T10:58:33.788Z",
     "updated_at": "2026-10-18T10:58:33.788Z"
+  },
+  "26667": {
+    "emp_id": "26667",
+    "emp_name": "พิวรรญญา บัตริยะ",
+    "shop_code": "1812",
+    "shop_name": "ID1812 : Studio 7-Big C-Mueang-Nan",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgM1XgNe/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-18T11:06:07.610Z",
+    "updated_at": "2026-10-18T11:06:07.610Z"
+  },
+  "27392": {
+    "emp_id": "27392",
+    "emp_name": "พรลักษณ์ พิมพิสุทธิ์",
+    "shop_code": "246",
+    "shop_name": "ID246 : Studio 7-Central-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgSDuGpn/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T09:40:13.012Z",
+    "updated_at": "2026-10-20T09:40:31.640Z"
+  },
+  "27813": {
+    "emp_id": "27813",
+    "emp_name": "ปิยณัฐ ม่วงมั่งมี",
+    "shop_code": "413",
+    "shop_name": "ID413 : Studio 7-V-Square-Nakhonsawan",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgh6v4Yq/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T07:51:14.139Z",
+    "updated_at": "2026-10-19T07:51:14.139Z"
+  },
+  "28307": {
+    "emp_id": "28307",
+    "emp_name": "อมรรัตน์ วิงวาท",
+    "shop_code": "2466",
+    "shop_name": "ID2466 : Studio 7-Lotus-Uttaradit",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgSRvKF9/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T07:24:01.472Z",
+    "updated_at": "2026-10-20T07:24:01.472Z"
+  },
+  "28314": {
+    "emp_id": "28314",
+    "emp_name": "ฐิติมา ทาระวา",
+    "shop_code": "2466",
+    "shop_name": "ID2466 : Studio 7-Lotus-Uttaradit",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgBoToy8/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T06:42:54.168Z",
+    "updated_at": "2026-10-20T06:42:54.168Z"
+  },
+  "28335": {
+    "emp_id": "28335",
+    "emp_name": "อัญนิกา ใสดี",
+    "shop_code": "586",
+    "shop_name": "ID586 : Studio 7-Lotus-Phetchabun",
+    "position": "PIA",
+    "tiktok_url": "https://www.tt.site/t/ZSgh2G762/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-16T10:01:29.008Z",
+    "updated_at": "2026-10-19T07:27:45.838Z"
+  },
+  "28395": {
+    "emp_id": "28395",
+    "emp_name": "ศรัญรัตน์ งานการ",
+    "shop_code": "420",
+    "shop_name": "ID420 : Studio 7-MarkFour-Phrae",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgMNcLVj/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-18T12:18:02.433Z",
+    "updated_at": "2026-10-18T12:18:02.433Z"
+  },
+  "28457": {
+    "emp_id": "28457",
+    "emp_name": "สุราณี ใจเกี๋ยง",
+    "shop_code": "246",
+    "shop_name": "ID246 : Studio 7-Central-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSghQWSLT/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T10:24:10.219Z",
+    "updated_at": "2026-10-19T10:24:10.219Z"
+  },
+  "28487": {
+    "emp_id": "28487",
+    "emp_name": "เดือนนภา ปะละตุ่น",
+    "shop_code": "412",
+    "shop_name": "ID412 : Studio 7-Big C-Tak",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgfv1kQe/",
+    "topic": "Cover Plus",
+    "custom_topic": "",
+    "clip_title": "Cover Plus",
+    "notes": "",
+    "submitted_at": "2026-10-18T11:42:48.634Z",
+    "updated_at": "2026-10-22T09:50:02.061Z"
+  },
+  "28495": {
+    "emp_id": "28495",
+    "emp_name": "ธีระวัตย์ สมทอง",
+    "shop_code": "586",
+    "shop_name": "ID586 : Studio 7-Lotus-Phetchabun",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSghrMwky/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T07:57:55.092Z",
+    "updated_at": "2026-10-19T07:57:55.092Z"
+  },
+  "28653": {
+    "emp_id": "28653",
+    "emp_name": "ภัสยากรณ์ มิฟองฟู",
+    "shop_code": "653",
+    "shop_name": "ID653 : Studio 7-Robinson-Maesod",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgrwCnV5/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T05:38:31.044Z",
+    "updated_at": "2026-10-19T05:38:31.044Z"
+  },
+  "29183": {
+    "emp_id": "29183",
+    "emp_name": "น้ำฝน บุญชู",
+    "shop_code": "246",
+    "shop_name": "ID246 : Studio 7-Central-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgS5fThK/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T10:18:35.633Z",
+    "updated_at": "2026-10-20T10:18:35.633Z"
+  },
+  "29188": {
+    "emp_id": "29188",
+    "emp_name": "สุรศักดิ์ สุราภัย",
+    "shop_code": "282",
+    "shop_name": "ID282 : Studio 7-Big C-Kamphaengphet",
+    "position": "PIA",
+    "tiktok_url": "https://www.tt.site/t/ZSgSdj9wV/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T07:08:47.640Z",
+    "updated_at": "2026-10-20T07:08:47.640Z"
+  },
+  "29732": {
+    "emp_id": "29732",
+    "emp_name": "วชิรวิทย์ บุญคง",
+    "shop_code": "2522",
+    "shop_name": "ID2522 : Studio7-Big C-Mueang-Sukhothai",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgMAJ9uU/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-18T14:04:54.441Z",
+    "updated_at": "2026-10-18T14:04:54.441Z"
+  },
+  "31647": {
+    "emp_id": "31647",
+    "emp_name": "ปณัฐดา กัลปนาท",
+    "shop_code": "2800",
+    "shop_name": "ID2800 : Studio7-Big C-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSghGLYKh/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T11:31:59.941Z",
+    "updated_at": "2026-10-19T11:31:59.941Z"
+  },
+  "31783": {
+    "emp_id": "31783",
+    "emp_name": "สีแพร จันฉิม",
+    "shop_code": "2800",
+    "shop_name": "ID2800 : Studio7-Big C-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://www.tt.site/t/ZSgrvu1RM/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T05:05:54.479Z",
+    "updated_at": "2026-10-19T05:05:54.479Z"
+  },
+  "32042": {
+    "emp_id": "32042",
+    "emp_name": "รินสิริ กลิ่นแสง",
+    "shop_code": "2522",
+    "shop_name": "ID2522 : Studio7-Big C-Mueang-Sukhothai",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSghyfEyG/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T09:01:06.954Z",
+    "updated_at": "2026-10-19T09:01:14.664Z"
+  },
+  "32665": {
+    "emp_id": "32665",
+    "emp_name": "จารุวรรณ ลอดลา",
+    "shop_code": "1484",
+    "shop_name": "ID1484 : Studio 7(P)-Mueang-Uttaradit",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgh73vXQ/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T12:06:45.777Z",
+    "updated_at": "2026-10-19T12:06:57.279Z"
+  },
+  "32675": {
+    "emp_id": "32675",
+    "emp_name": "ศิรภัสกรณ์ สมัครเขตรการ",
+    "shop_code": "412",
+    "shop_name": "ID412 : Studio 7-Big C-Tak",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgMLcvnH/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-18T12:07:31.816Z",
+    "updated_at": "2026-10-18T12:07:44.412Z"
+  },
+  "33107": {
+    "emp_id": "33107",
+    "emp_name": "ปณิดา เตินขุนทด",
+    "shop_code": "653",
+    "shop_name": "ID653 : Studio 7-Robinson-Maesod",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgSwvyMS/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T14:07:38.744Z",
+    "updated_at": "2026-10-20T14:07:51.651Z"
+  },
+  "33186": {
+    "emp_id": "33186",
+    "emp_name": "ชญานิน ทวีทรัพย์มนตรี",
+    "shop_code": "653",
+    "shop_name": "ID653 : Studio 7-Robinson-Maesod",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSghppkWL/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T11:24:19.386Z",
+    "updated_at": "2026-10-19T11:24:19.386Z"
+  },
+  "33357": {
+    "emp_id": "33357",
+    "emp_name": "สุทธวีร์ โปทาเมือง",
+    "shop_code": "246",
+    "shop_name": "ID246 : Studio 7-Central-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgSeCA59/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T07:04:58.711Z",
+    "updated_at": "2026-10-20T07:05:22.136Z"
+  },
+  "33454": {
+    "emp_id": "33454",
+    "emp_name": "เสาวลักษณ์ ครุฑเครือ",
+    "shop_code": "246",
+    "shop_name": "ID246 : Studio 7-Central-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgh6xrLr/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T07:44:32.123Z",
+    "updated_at": "2026-10-19T07:44:32.123Z"
+  },
+  "34094": {
+    "emp_id": "34094",
+    "emp_name": "แพรวพรรณ สมัยกุล",
+    "shop_code": "2800",
+    "shop_name": "ID2800 : Studio7-Big C-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgS8Y57t/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T07:27:56.376Z",
+    "updated_at": "2026-10-20T07:27:56.376Z"
+  },
+  "34153": {
+    "emp_id": "34153",
+    "emp_name": "วรชิต ประทุม",
+    "shop_code": "413",
+    "shop_name": "ID413 : Studio 7-V-Square-Nakhonsawan",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgBovw7f/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T06:42:01.045Z",
+    "updated_at": "2026-10-20T06:42:01.045Z"
+  },
+  "34918": {
+    "emp_id": "34918",
+    "emp_name": "ลลิชา สังข์ชัย",
+    "shop_code": "586",
+    "shop_name": "ID586 : Studio 7-Lotus-Phetchabun",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSghMUd2Y/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-16T10:04:10.614Z",
+    "updated_at": "2026-10-19T07:50:30.363Z"
+  },
+  "35074": {
+    "emp_id": "35074",
+    "emp_name": "เมดินา สมอทอง",
+    "shop_code": "1484",
+    "shop_name": "ID1484 : Studio 7(P)-Mueang-Uttaradit",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgSJR8W6/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T06:51:19.357Z",
+    "updated_at": "2026-10-20T06:51:19.357Z"
+  },
+  "35147": {
+    "emp_id": "35147",
+    "emp_name": "ธานินทร์ วงษ์ใหม่",
+    "shop_code": "246",
+    "shop_name": "ID246 : Studio 7-Central-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgh6MaRK/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-19T07:43:39.177Z",
+    "updated_at": "2026-10-19T07:43:39.177Z"
   },
   "35194": {
     "emp_id": "35194",
@@ -108,6 +697,48 @@ const SEED_SUBMISSIONS = {
     "submitted_at": "2026-10-18T11:02:04.200Z",
     "updated_at": "2026-10-18T11:02:04.200Z"
   },
+  "35238": {
+    "emp_id": "35238",
+    "emp_name": "ทูเซ สราญตระกูลไพร",
+    "shop_code": "653",
+    "shop_name": "ID653 : Studio 7-Robinson-Maesod",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgSpwj7m/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T12:30:59.793Z",
+    "updated_at": "2026-10-20T12:30:59.793Z"
+  },
+  "35253": {
+    "emp_id": "35253",
+    "emp_name": "ฐิติพงศ์ ไชยชิต",
+    "shop_code": "246",
+    "shop_name": "ID246 : Studio 7-Central-Phitsanulok",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgS2oxEJ/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T08:13:04.085Z",
+    "updated_at": "2026-10-20T08:13:04.085Z"
+  },
+  "35259": {
+    "emp_id": "35259",
+    "emp_name": "ศกุญณา ปัญญาดิษฐวงษ์",
+    "shop_code": "653",
+    "shop_name": "ID653 : Studio 7-Robinson-Maesod",
+    "position": "PIA",
+    "tiktok_url": "https://vt.tiktok.com/ZSgS7s5DF/",
+    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "custom_topic": "",
+    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
+    "notes": "",
+    "submitted_at": "2026-10-20T13:26:12.513Z",
+    "updated_at": "2026-10-20T13:26:12.513Z"
+  },
   "36198": {
     "emp_id": "36198",
     "emp_name": "ฉันทพิชญา เทพสิทธิ์",
@@ -121,20 +752,6 @@ const SEED_SUBMISSIONS = {
     "notes": "",
     "submitted_at": "2026-10-18T11:05:30.861Z",
     "updated_at": "2026-10-18T11:05:30.861Z"
-  },
-  "26667": {
-    "emp_id": "26667",
-    "emp_name": "พิวรรญญา บัตริยะ",
-    "shop_code": "1812",
-    "shop_name": "ID1812 : Studio 7-Big C-Mueang-Nan",
-    "position": "PIA",
-    "tiktok_url": "https://vt.tiktok.com/ZSgM1XgNe/",
-    "topic": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
-    "custom_topic": "",
-    "clip_title": "🎧 รีวิวอุปกรณ์เสริม BTB(3rd)",
-    "notes": "",
-    "submitted_at": "2026-10-18T11:06:07.610Z",
-    "updated_at": "2026-10-18T11:06:07.610Z"
   }
 };
 
@@ -157,16 +774,75 @@ function writeJSON(file, data) {
   fs.renameSync(tempFile, file);
 }
 
+// Normalize a submission record so it always carries a per-topic `by_topic` map
+function normalizeRecord(rec) {
+  if (!rec || rec.deleted) return rec;
+  const copy = { ...rec };
+  const byTopic = (copy.by_topic && typeof copy.by_topic === 'object') ? { ...copy.by_topic } : {};
+  const tKey = copy.topic || copy.clip_title || '💬 หัวข้ออิสระ / อื่นๆ';
+  if (copy.tiktok_url) {
+    const existingTopicEntry = byTopic[tKey];
+    if (!existingTopicEntry || new Date(copy.updated_at || 0) >= new Date(existingTopicEntry.updated_at || 0)) {
+      byTopic[tKey] = {
+        emp_id: copy.emp_id,
+        emp_name: copy.emp_name,
+        shop_code: copy.shop_code,
+        shop_name: copy.shop_name,
+        position: copy.position,
+        tiktok_url: copy.tiktok_url,
+        topic: tKey,
+        custom_topic: copy.custom_topic || '',
+        clip_title: copy.clip_title || tKey,
+        notes: copy.notes || '',
+        submitted_at: copy.submitted_at || copy.updated_at,
+        updated_at: copy.updated_at
+      };
+    }
+  }
+  copy.by_topic = byTopic;
+  return copy;
+}
+
+// Merge two records for the same employee, preserving submissions across all topics
+function mergeRecords(existing, incoming) {
+  if (!existing) return normalizeRecord(incoming);
+  if (!incoming) return normalizeRecord(existing);
+  if (incoming.deleted) {
+    return new Date(incoming.updated_at || 0) >= new Date(existing.updated_at || 0)
+      ? incoming
+      : normalizeRecord(existing);
+  }
+  if (existing.deleted) {
+    return new Date(incoming.updated_at || 0) > new Date(existing.updated_at || 0)
+      ? normalizeRecord(incoming)
+      : existing;
+  }
+  const normEx = normalizeRecord(existing);
+  const normIn = normalizeRecord(incoming);
+  const mergedByTopic = { ...(normEx.by_topic || {}) };
+  for (const [tKey, tRec] of Object.entries(normIn.by_topic || {})) {
+    if (!tRec || !tRec.tiktok_url) continue;
+    const prev = mergedByTopic[tKey];
+    if (!prev || new Date(tRec.updated_at || 0) >= new Date(prev.updated_at || 0)) {
+      mergedByTopic[tKey] = tRec;
+    }
+  }
+  const isIncomingNewer = new Date(normIn.updated_at || 0) >= new Date(normEx.updated_at || 0);
+  const primary = isIncomingNewer ? { ...normIn } : { ...normEx };
+  primary.by_topic = mergedByTopic;
+  return primary;
+}
+
 // Helper to read all submissions (including seed data and tombstones)
 function getRawSubmissions() {
   const disk = readJSON(SUBMISSIONS_FILE, {});
-  const merged = { ...SEED_SUBMISSIONS };
+  const merged = {};
+  for (const [empId, seedRec] of Object.entries(SEED_SUBMISSIONS)) {
+    merged[empId] = normalizeRecord(seedRec);
+  }
   for (const [empId, record] of Object.entries(disk)) {
     if (!record) continue;
-    const existing = merged[empId];
-    if (!existing || new Date(record.updated_at || 0) >= new Date(existing.updated_at || 0)) {
-      merged[empId] = record;
-    }
+    merged[empId] = mergeRecords(merged[empId], record);
   }
   return merged;
 }
@@ -285,8 +961,9 @@ const server = http.createServer(async (req, res) => {
         const staff = staffList.find(s => s.emp_id === String(empId).trim());
         if (!staff) continue;
         const existing = currentRaw[empId];
-        if (!existing || new Date(rec.updated_at || 0) > new Date(existing.updated_at || 0)) {
-          currentRaw[empId] = rec;
+        const merged = mergeRecords(existing, rec);
+        if (JSON.stringify(merged) !== JSON.stringify(existing)) {
+          currentRaw[empId] = merged;
           changed = true;
         }
       }
@@ -326,10 +1003,14 @@ const server = http.createServer(async (req, res) => {
     staffList.forEach(s => {
       const sub = submissions[s.emp_id];
       if (sub) {
-        const topicKey = sub.topic || sub.clip_title || '💬 หัวข้ออิสระ / อื่นๆ';
-        if (topicCounts[topicKey] !== undefined) {
-          topicCounts[topicKey] += 1;
+        const byTopic = sub.by_topic && typeof sub.by_topic === 'object' ? sub.by_topic : {};
+        const topicKeys = Object.keys(byTopic).filter(k => byTopic[k] && byTopic[k].tiktok_url);
+        if (topicKeys.length > 0) {
+          topicKeys.forEach(topicKey => {
+            topicCounts[topicKey] = (topicCounts[topicKey] || 0) + 1;
+          });
         } else {
+          const topicKey = sub.topic || sub.clip_title || '💬 หัวข้ออิสระ / อื่นๆ';
           topicCounts[topicKey] = (topicCounts[topicKey] || 0) + 1;
         }
       }
@@ -479,10 +1160,13 @@ const server = http.createServer(async (req, res) => {
       const submissions = getRawSubmissions();
       const now = new Date().toISOString();
       const existing = submissions[staff.emp_id] && !submissions[staff.emp_id].deleted
-        ? submissions[staff.emp_id]
+        ? normalizeRecord(submissions[staff.emp_id])
         : null;
 
-      const submissionRecord = {
+      const byTopic = existing && existing.by_topic ? { ...existing.by_topic } : {};
+      const existingForTopic = byTopic[selectedTopic] || null;
+
+      const topicEntry = {
         emp_id: staff.emp_id,
         emp_name: staff.full_name,
         shop_code: staff.shop_code,
@@ -493,8 +1177,15 @@ const server = http.createServer(async (req, res) => {
         custom_topic: customText,
         clip_title: displayTitle,
         notes: (notes || '').trim(),
-        submitted_at: existing ? existing.submitted_at : now,
+        submitted_at: existingForTopic ? existingForTopic.submitted_at : now,
         updated_at: now
+      };
+
+      byTopic[selectedTopic] = topicEntry;
+
+      const submissionRecord = {
+        ...topicEntry,
+        by_topic: byTopic
       };
 
       submissions[staff.emp_id] = submissionRecord;
@@ -502,7 +1193,7 @@ const server = http.createServer(async (req, res) => {
 
       return sendJSON(res, 200, {
         success: true,
-        message: existing ? 'อัปเดตข้อมูลคลิปเรียบร้อยแล้ว' : 'บันทึกข้อมูลคลิป TikTok เรียบร้อยแล้ว',
+        message: existingForTopic ? 'อัปเดตข้อมูลคลิปเรียบร้อยแล้ว' : 'บันทึกข้อมูลคลิป TikTok เรียบร้อยแล้ว',
         data: submissionRecord
       });
     } catch (err) {
@@ -511,11 +1202,33 @@ const server = http.createServer(async (req, res) => {
     }
   }
 
-  // DELETE /api/submission/:emp_id - Delete submission (with tombstone so seed/sync won't resurrect)
+  // DELETE /api/submission/:emp_id - Delete submission (supports optional ?topic= parameter)
   if (req.method === 'DELETE' && pathname.startsWith('/api/submission/')) {
     const emp_id = pathname.replace('/api/submission/', '').trim();
+    const targetTopic = parsedUrl.query && parsedUrl.query.topic ? String(parsedUrl.query.topic).trim() : '';
     const submissions = getRawSubmissions();
     if (submissions[emp_id] && !submissions[emp_id].deleted) {
+      const rec = normalizeRecord(submissions[emp_id]);
+      const byTopic = rec.by_topic ? { ...rec.by_topic } : {};
+      if (targetTopic && targetTopic !== 'all' && byTopic[targetTopic]) {
+        delete byTopic[targetTopic];
+        const remainingTopics = Object.values(byTopic).filter(v => v && v.tiktok_url);
+        if (remainingTopics.length > 0) {
+          remainingTopics.sort((a, b) => new Date(b.updated_at || 0) - new Date(a.updated_at || 0));
+          const latest = remainingTopics[0];
+          submissions[emp_id] = {
+            ...latest,
+            updated_at: new Date().toISOString(),
+            by_topic: byTopic
+          };
+          writeJSON(SUBMISSIONS_FILE, submissions);
+          return sendJSON(res, 200, {
+            success: true,
+            message: `ลบข้อมูลคลิปหัวข้อ "${targetTopic}" เรียบร้อยแล้ว`,
+            data: submissions[emp_id]
+          });
+        }
+      }
       submissions[emp_id] = {
         emp_id,
         deleted: true,
@@ -530,15 +1243,27 @@ const server = http.createServer(async (req, res) => {
   // GET /api/export - Export CSV file for PIA staff with Thai UTF-8 BOM
   if (req.method === 'GET' && pathname === '/api/export') {
     const submissions = getActiveSubmissions();
+    const filterTopic = parsedUrl.query && parsedUrl.query.topic ? String(parsedUrl.query.topic).trim() : '';
     
     // CSV Header with BOM
     let csv = '\ufeffลำดับ,รอบเดือน,รหัสพนักงาน,ชื่อ-นามสกุล,ตำแหน่ง,รหัสสาขา,ชื่อสาขา,สถานะ,ลิงก์ TikTok,หัวข้อคลิป,รายละเอียดเพิ่มเติม,หมายเหตุ,วันที่ส่งข้อมูล\n';
 
     staffList.forEach((s, idx) => {
-      const sub = submissions[s.emp_id];
+      const rawSub = submissions[s.emp_id];
+      let sub = rawSub;
+      if (filterTopic && filterTopic !== 'all') {
+        const byTopic = rawSub && rawSub.by_topic ? rawSub.by_topic : {};
+        if (byTopic[filterTopic]) {
+          sub = byTopic[filterTopic];
+        } else if (rawSub && (rawSub.topic === filterTopic || rawSub.clip_title === filterTopic)) {
+          sub = rawSub;
+        } else {
+          sub = null;
+        }
+      }
       const status = sub ? 'ส่งแล้ว' : 'ยังไม่ส่ง';
       const tiktokUrl = sub ? `"${sub.tiktok_url.replace(/"/g, '""')}"` : '""';
-      const topicVal = sub ? `"${(sub.topic || sub.clip_title || '').replace(/"/g, '""')}"` : '""';
+      const topicVal = sub ? `"${(sub.topic || sub.clip_title || '').replace(/"/g, '""')}"` : (filterTopic && filterTopic !== 'all' ? `"${filterTopic.replace(/"/g, '""')}"` : '""');
       const customVal = sub ? `"${(sub.custom_topic || '').replace(/"/g, '""')}"` : '""';
       const notes = sub ? `"${(sub.notes || '').replace(/"/g, '""')}"` : '""';
       const dateStr = sub ? new Date(sub.updated_at).toLocaleString('th-TH') : '';
